@@ -246,6 +246,8 @@ public class MinukuStreamManager implements StreamManager {
         this.activityRecognitionDataRecord = activityRecognitionDataRecord;
     }
 
+
+
     public ActivityRecognitionDataRecord getActivityRecognitionDataRecord(){
         return activityRecognitionDataRecord;
     }
@@ -265,10 +267,10 @@ public class MinukuStreamManager implements StreamManager {
 
             Log.d(TAG, "[test triggering] NEW: " + notificationDataRecord.getNotificaitonPackageName() + " vs OLD:" + this.notificationDataRecord.getNotificaitonPackageName());
         }
+        Log.d(TAG, "[test triggering] is Default ? : "+!notificationDataRecord.getNotificaitonPackageName().equals(NotificationStreamGenerator.NOTIFICATION_NAME_NA));
 
         if (!this.notificationDataRecord.getNotificaitonPackageName().equals("Default")) {
-            Log.d(TAG, "[test triggering] is Default ? : "+!notificationDataRecord.getNotificaitonPackageName().equals(NotificationStreamGenerator.NOTIFICATION_NAME_NA));
-            sendTagNotification(context);
+//            sendTagNotification(context);
         }
     }
 

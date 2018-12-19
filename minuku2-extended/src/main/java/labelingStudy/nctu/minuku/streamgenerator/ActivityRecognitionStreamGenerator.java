@@ -237,11 +237,11 @@ public class ActivityRecognitionStreamGenerator extends AndroidStreamGenerator<A
                         .build();
                 db.activityRecognitionDataRecordDao().insertAll(activityRecognitionDataRecord);
                 List<ActivityRecognitionDataRecord> activityRecognitionDataRecords = db.activityRecognitionDataRecordDao().getAll();
-                for (ActivityRecognitionDataRecord a : activityRecognitionDataRecords) {
-                    labelingStudy.nctu.minuku.logger.Log.e(TAG, "Detectedtime"+String.valueOf(a.getDetectedtime()));
-                    labelingStudy.nctu.minuku.logger.Log.e(TAG, "ostProbableActivity"+a.getMostProbableActivity().toString());
-                    labelingStudy.nctu.minuku.logger.Log.e(TAG, "ProbableActivities"+String.valueOf(a.getProbableActivities()));
-                }
+//                for (ActivityRecognitionDataRecord a : activityRecognitionDataRecords) {
+//                    labelingStudy.nctu.minuku.logger.Log.e(TAG, "Detectedtime: "+String.valueOf(a.getDetectedtime()));
+//                    labelingStudy.nctu.minuku.logger.Log.e(TAG, "ostProbableActivity: "+a.getMostProbableActivity().toString());
+//                    labelingStudy.nctu.minuku.logger.Log.e(TAG, "ProbableActivities: "+String.valueOf(a.getProbableActivities()));
+//                }
             } catch (NullPointerException e) {
                 e.printStackTrace();
                 return false;
@@ -374,7 +374,6 @@ public class ActivityRecognitionStreamGenerator extends AndroidStreamGenerator<A
 
     @SuppressLint("LongLogTag")
     protected void addRecord(ActivityRecognitionDataRecord activityRecognitionDataRecord) {
-
         /**1. add record to the local pool **/
         long id = recordCount++;
         activityRecognitionDataRecord.set_id(id);
@@ -382,15 +381,13 @@ public class ActivityRecognitionStreamGenerator extends AndroidStreamGenerator<A
 
         mLocalRecordPool.add(activityRecognitionDataRecord); //it's working.
         Log.d(TAG, "[test logging]add record " + "logged at " + activityRecognitionDataRecord.getCreationTime() );
-
         /**2. check whether we should remove old record **/
         removeOutDatedRecord();
         //**** update the latest ActivityRecognitionDataRecord in mLocalRecordPool to MinukuStreamManager;
-        mLocalRecordPool.get(mLocalRecordPool.size()-1).set_id(999);
-        Log.d(TAG,"size : "+mLocalRecordPool.size());
-        MinukuStreamManager.getInstance().setActivityRecognitionDataRecord(mLocalRecordPool.get(mLocalRecordPool.size()-1));
-        Log.d(TAG,"CreateTime:" + mLocalRecordPool.get(mLocalRecordPool.size()-1).getCreationTime()+ " MostProbableActivity:"+mLocalRecordPool.get(mLocalRecordPool.size()-1).getMostProbableActivity());
-
+        //mLocalRecordPool.get(mLocalRecordPool.size()-1).set_id(999);
+//        Log.d(TAG,"size : "+mLocalRecordPool.size());
+//        MinukuStreamManager.getInstance().setActivityRecognitionDataRecord(mLocalRecordPool.get(mLocalRecordPool.size()-1));
+//        Log.d(TAG,"CreateTime:" + mLocalRecordPool.get(mLocalRecordPool.size()-1).getCreationTime()+ " MostProbableActivity:"+mLocalRecordPool.get(mLocalRecordPool.size()-1).getMostProbableActivity());
 
         this.activityRecognitionDataRecord = activityRecognitionDataRecord;
 
@@ -422,7 +419,7 @@ public class ActivityRecognitionStreamGenerator extends AndroidStreamGenerator<A
                             transportationModeStreamGenerator.getSuspectTime(),
                             suspectedStartActivity, suspectedEndActivity);
 
-            MinukuStreamManager.getInstance().setTransportationModeDataRecord(transportationModeDataRecord, mContext, sharedPrefs);
+//            MinukuStreamManager.getInstance().setTransportationModeDataRecord(transportationModeDataRecord, mContext, sharedPrefs);
 
             //TagMe
             NotificationStreamGenerator notificationStreamGenerator
@@ -446,9 +443,10 @@ public class ActivityRecognitionStreamGenerator extends AndroidStreamGenerator<A
 //            String suspectedEndActivity = getActivityNameFromType(transportationModeStreamGenerator.getSuspectedStopActivityType());
 
             NotificationDataRecord notificationDataRecord =
-                    new NotificationDataRecord(mNotificaitonTitle, mNotificaitonText, mNotificaitonSubText
-                            , mNotificationTickerText, mNotificaitonPackageName ,accessid);
-            MinukuStreamManager.getInstance().setNotificationDataRecord(notificationDataRecord, mContext, sharedPrefs);
+                    new NotificationDataRecord(notificationStreamGenerator.getNotificaitonTitle(), notificationStreamGenerator.getNotificaitonText(), notificationStreamGenerator.getNotificaitonSubText()
+                            , notificationStreamGenerator.getNotificationTickerText(), notificationStreamGenerator.getNotificaitonPackageName() ,notificationStreamGenerator.getaccessid());
+            Log.e(TAG, "notification msg:  PackageName - " + notificationStreamGenerator.getNotificaitonPackageName() );
+//            MinukuStreamManager.getInstance().setNotificationDataRecord(notificationDataRecord, mContext, sharedPrefs);
 
         }catch (StreamNotFoundException e){
             e.printStackTrace();

@@ -95,9 +95,14 @@ public class NotificationStreamGenerator extends AndroidStreamGenerator<Notifica
     @Override
     public boolean updateStream() {
 
+        Log.d(TAG, "update stream called");
+
         NotificationDataRecord notificationDataRecord =
                 new NotificationDataRecord(mNotificaitonTitle, mNotificaitonText, mNotificaitonSubText
                         , mNotificationTickerText, mNotificaitonPackageName ,accessid);
+
+        Log.d(TAG, " " + mNotificaitonTitle + mNotificaitonText + mNotificaitonSubText
+                 + mNotificationTickerText + mNotificaitonPackageName + accessid);
 
         mStream.add(notificationDataRecord);
         Log.d(TAG, "Check notification to be sent to event bus " + notificationDataRecord);
@@ -112,11 +117,11 @@ public class NotificationStreamGenerator extends AndroidStreamGenerator<Notifica
                     .build();
             db.notificationDataRecordDao().insertAll(notificationDataRecord);
             List<NotificationDataRecord> notificationDataRecords = db.notificationDataRecordDao().getAll();
-            for (NotificationDataRecord l : notificationDataRecords) {
-                Log.e(TAG, " NotificationPackageName: " + String.valueOf(l.getNotificaitonPackageName()));
-                Log.e(TAG, " NotificationTitle: " + String.valueOf(l.getNotificaitonTitle()));
-                Log.e(TAG, " NotificationText: " + String.valueOf(l.getNotificaitonText()));
-            }
+//            for (NotificationDataRecord l : notificationDataRecords) {
+//                Log.e(TAG, " NotificationPackageName: " + String.valueOf(l.getNotificaitonPackageName()));
+//                Log.e(TAG, " NotificationTitle: " + String.valueOf(l.getNotificaitonTitle()));
+//                Log.e(TAG, " NotificationText: " + String.valueOf(l.getNotificaitonText()));
+//            }
 //            List<NotificationDataRecord> NotificationDataRecords = db.notificationDataRecordDao().getAll();
 //            for (NotificationDataRecord n : NotificationDataRecords) {
 //                Log.d(room,"Notification: "+n.getNotificaitonPackageName());
@@ -156,7 +161,29 @@ public class NotificationStreamGenerator extends AndroidStreamGenerator<Notifica
 
     }
 
+    public static String getNotificaitonTitle() {
+        return mNotificaitonTitle;
+    }
 
+    public static String getNotificaitonText() {
+        return mNotificaitonText;
+    }
+
+    public static String getNotificaitonSubText() {
+        return mNotificaitonSubText;
+    }
+
+    public static String getNotificationTickerText() {
+        return mNotificationTickerText;
+    }
+
+    public static String getNotificaitonPackageName() {
+        return mNotificaitonPackageName;
+    }
+
+    public static Integer getaccessid() {
+        return accessid;
+    }
     @Override
     public void offer(NotificationDataRecord dataRecord) {
 
