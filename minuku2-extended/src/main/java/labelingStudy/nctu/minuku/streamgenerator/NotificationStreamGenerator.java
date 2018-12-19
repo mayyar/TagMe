@@ -28,6 +28,9 @@ import labelingStudy.nctu.minukucore.stream.Stream;
 
 public class NotificationStreamGenerator extends AndroidStreamGenerator<NotificationDataRecord> {
 
+
+    public static final String NOTIFICATION_NAME_NA = "NA";
+
     private Context mContext;
     String TAG = "NotificationStreamGenerator";
     String room = "room";

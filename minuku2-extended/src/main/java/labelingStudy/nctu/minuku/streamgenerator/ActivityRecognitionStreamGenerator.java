@@ -34,6 +34,7 @@ import labelingStudy.nctu.minuku.manager.MinukuDAOManager;
 import labelingStudy.nctu.minuku.manager.MinukuStreamManager;
 import labelingStudy.nctu.minuku.manager.SessionManager;
 import labelingStudy.nctu.minuku.model.DataRecord.ActivityRecognitionDataRecord;
+import labelingStudy.nctu.minuku.model.DataRecord.NotificationDataRecord;
 import labelingStudy.nctu.minuku.model.DataRecord.TransportationModeDataRecord;
 import labelingStudy.nctu.minuku.service.ActivityRecognitionService;
 import labelingStudy.nctu.minuku.stream.ActivityRecognitionStream;
@@ -41,6 +42,13 @@ import labelingStudy.nctu.minukucore.dao.DAOException;
 import labelingStudy.nctu.minukucore.exception.StreamAlreadyExistsException;
 import labelingStudy.nctu.minukucore.exception.StreamNotFoundException;
 import labelingStudy.nctu.minukucore.stream.Stream;
+
+import static labelingStudy.nctu.minuku.streamgenerator.NotificationStreamGenerator.accessid;
+import static labelingStudy.nctu.minuku.streamgenerator.NotificationStreamGenerator.mNotificaitonPackageName;
+import static labelingStudy.nctu.minuku.streamgenerator.NotificationStreamGenerator.mNotificaitonSubText;
+import static labelingStudy.nctu.minuku.streamgenerator.NotificationStreamGenerator.mNotificaitonText;
+import static labelingStudy.nctu.minuku.streamgenerator.NotificationStreamGenerator.mNotificaitonTitle;
+import static labelingStudy.nctu.minuku.streamgenerator.NotificationStreamGenerator.mNotificationTickerText;
 
 /**
  * Created by Lawrence on 2017/5/15.
@@ -415,6 +423,32 @@ public class ActivityRecognitionStreamGenerator extends AndroidStreamGenerator<A
                             suspectedStartActivity, suspectedEndActivity);
 
             MinukuStreamManager.getInstance().setTransportationModeDataRecord(transportationModeDataRecord, mContext, sharedPrefs);
+
+            //TagMe
+            NotificationStreamGenerator notificationStreamGenerator
+                    = (NotificationStreamGenerator) MinukuStreamManager.getInstance().getStreamGeneratorFor(NotificationDataRecord.class);
+
+//            transportationModeStreamGenerator.examineTransportation(activityRecognitionDataRecord);
+//
+//            sharedPrefs.edit().putInt("CurrentState", TransportationModeStreamGenerator.mCurrentState).apply();
+//            sharedPrefs.edit().putInt("ConfirmedActivityType", TransportationModeStreamGenerator.mConfirmedActivityType).apply();
+//
+//            CSVHelper.storeToCSV(CSVHelper.CSV_CHECK_TRANSPORTATION,
+//                    ScheduleAndSampleManager.getCurrentTimeString(),
+//                    TransportationModeStreamGenerator.getConfirmedActivityString(),
+//                    ScheduleAndSampleManager.getTimeString(TransportationModeStreamGenerator.getSuspectTime()),
+//                    getActivityNameFromType(TransportationModeStreamGenerator.getSuspectedStartActivityType()),
+//                    getActivityNameFromType(TransportationModeStreamGenerator.getSuspectedStopActivityType()),
+//                    activityRecognitionDataRecord.getMostProbableActivity().toString(),
+//                    activityRecognitionDataRecord.getProbableActivities().toString());
+
+//            String suspectedStartActivity = getActivityNameFromType(transportationModeStreamGenerator.getSuspectedStartActivityType());
+//            String suspectedEndActivity = getActivityNameFromType(transportationModeStreamGenerator.getSuspectedStopActivityType());
+
+            NotificationDataRecord notificationDataRecord =
+                    new NotificationDataRecord(mNotificaitonTitle, mNotificaitonText, mNotificaitonSubText
+                            , mNotificationTickerText, mNotificaitonPackageName ,accessid);
+            MinukuStreamManager.getInstance().setNotificationDataRecord(notificationDataRecord, mContext, sharedPrefs);
 
         }catch (StreamNotFoundException e){
             e.printStackTrace();

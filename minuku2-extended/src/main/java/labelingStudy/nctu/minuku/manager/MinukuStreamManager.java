@@ -54,10 +54,12 @@ import labelingStudy.nctu.minuku.model.Annotation;
 import labelingStudy.nctu.minuku.model.AnnotationSet;
 import labelingStudy.nctu.minuku.model.DataRecord.ActivityRecognitionDataRecord;
 import labelingStudy.nctu.minuku.model.DataRecord.LocationDataRecord;
+import labelingStudy.nctu.minuku.model.DataRecord.NotificationDataRecord;
 import labelingStudy.nctu.minuku.model.DataRecord.TransportationModeDataRecord;
 import labelingStudy.nctu.minuku.model.MinukuStreamSnapshot;
 import labelingStudy.nctu.minuku.model.Session;
 import labelingStudy.nctu.minuku.streamgenerator.ActivityRecognitionStreamGenerator;
+import labelingStudy.nctu.minuku.streamgenerator.NotificationStreamGenerator;
 import labelingStudy.nctu.minuku.streamgenerator.TransportationModeStreamGenerator;
 import labelingStudy.nctu.minukucore.event.IsDataExpectedEvent;
 import labelingStudy.nctu.minukucore.event.NoDataChangeEvent;
@@ -91,6 +93,7 @@ public class MinukuStreamManager implements StreamManager {
 
     private ActivityRecognitionDataRecord activityRecognitionDataRecord;
     private TransportationModeDataRecord transportationModeDataRecord;
+    private NotificationDataRecord notificationDataRecord;
     private LocationDataRecord locationDataRecord;
 
     private static int counter = 0;
@@ -246,6 +249,29 @@ public class MinukuStreamManager implements StreamManager {
     public ActivityRecognitionDataRecord getActivityRecognitionDataRecord(){
         return activityRecognitionDataRecord;
     }
+
+    //TagMe
+    public void setNotificationDataRecord(NotificationDataRecord notificationDataRecord, final Context context, final  SharedPreferences sharedPrefs) {
+        Log.d(TAG, "[test triggering] incoming notification: " + notificationDataRecord.getNotificaitonPackageName());
+
+        Boolean addSessionFlag = false;
+
+        //the first time we see incoming notification data
+        if (this.notificationDataRecord == null) {
+
+            this.notificationDataRecord = new NotificationDataRecord(NotificationStreamGenerator.NOTIFICATION_NAME_NA);
+            Log.d(TAG, "[test triggering] test notification original null updated to " + this.notificationDataRecord.getNotificaitonPackageName());
+        } else {
+
+            Log.d(TAG, "[test triggering] NEW: " + notificationDataRecord.getNotificaitonPackageName() + " vs OLD:" + this.notificationDataRecord.getNotificaitonPackageName());
+        }
+
+        if (!this.notificationDataRecord.getNotificaitonPackageName().equals("Default")) {
+            Log.d(TAG, "[test triggering] is Default ? : "+!notificationDataRecord.getNotificaitonPackageName().equals(NotificationStreamGenerator.NOTIFICATION_NAME_NA));
+            sendTagNotification(context);
+        }
+    }
+
 
     public void setTransportationModeDataRecord(TransportationModeDataRecord transportationModeDataRecord, final Context context, final SharedPreferences sharedPrefs){
 
@@ -666,7 +692,18 @@ public class MinukuStreamManager implements StreamManager {
         return sessionTransportation;
     }
 
-    private void sendNotification(Context context, long startTime, String sessionTransportation){
+    //TagMe
+    private void sendTagNotification(Context context) {
+        NotificationManager mNotificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        String notificationText = "TagMe";
+
+        Notification notification = getNotification(notificationText, context);
+
+    }
+
+        private void sendNotification(Context context, long startTime, String sessionTransportation){
 
         NotificationManager mNotificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

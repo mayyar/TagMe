@@ -2,6 +2,7 @@ package labelingStudy.nctu.minuku.model.DataRecord;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
 import java.util.Date;
@@ -88,6 +89,8 @@ public class NotificationDataRecord implements DataRecord {
     }
 
 
+
+
     public NotificationDataRecord(String NotificaitonTitle, String NotificaitonText, String NotificaitonSubText
             , String NotificationTickerText, String NotificaitonPackageName, Integer accessid){
         this.creationTime = new Date().getTime();
@@ -101,6 +104,11 @@ public class NotificationDataRecord implements DataRecord {
         this.accessid = accessid;
         this.syncStatus = 0;
 
+    }
+    @Ignore
+    public NotificationDataRecord(String NotificaitonPackageName){
+        this.creationTime = new Date().getTime();
+        this.NotificaitonPackageName = NotificaitonPackageName;
     }
 }
 
