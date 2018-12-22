@@ -253,7 +253,7 @@ public class MinukuStreamManager implements StreamManager {
     }
 
     //TagMe
-    public void setNotificationDataRecord(NotificationDataRecord notificationDataRecord, final Context context, final  SharedPreferences sharedPrefs) {
+    public void setNotificationDataRecord(NotificationDataRecord notificationDataRecord, final Context context) {
         Log.d(TAG, "[test triggering] incoming notification: " + notificationDataRecord.getNotificaitonPackageName());
 
         Boolean addSessionFlag = false;
@@ -269,8 +269,10 @@ public class MinukuStreamManager implements StreamManager {
         }
         Log.d(TAG, "[test triggering] is Default ? : "+!notificationDataRecord.getNotificaitonPackageName().equals(NotificationStreamGenerator.NOTIFICATION_NAME_NA));
 
-        if (!this.notificationDataRecord.getNotificaitonPackageName().equals("Default")) {
-//            sendTagNotification(context);
+        if (notificationDataRecord.getNotificaitonPackageName().equals("com.facebook.orca") && notificationDataRecord.getNotificaitonText().length() > 5) {
+            sendTagNotification(context);
+            Log.d(TAG, "[test triggering] Long enough Facebook message is coming");
+
         }
     }
 
@@ -699,9 +701,11 @@ public class MinukuStreamManager implements StreamManager {
         NotificationManager mNotificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        String notificationText = "TagMe";
+        String notificationText = "Please click to fill the questionnaire";
 
         Notification notification = getNotification(notificationText, context);
+        mNotificationManager.notify(MinukuNotificationManager.reminderNotificationID, notification);
+
 
     }
 

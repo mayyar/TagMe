@@ -421,32 +421,7 @@ public class ActivityRecognitionStreamGenerator extends AndroidStreamGenerator<A
 
 //            MinukuStreamManager.getInstance().setTransportationModeDataRecord(transportationModeDataRecord, mContext, sharedPrefs);
 
-            //TagMe
-            NotificationStreamGenerator notificationStreamGenerator
-                    = (NotificationStreamGenerator) MinukuStreamManager.getInstance().getStreamGeneratorFor(NotificationDataRecord.class);
 
-//            transportationModeStreamGenerator.examineTransportation(activityRecognitionDataRecord);
-//
-//            sharedPrefs.edit().putInt("CurrentState", TransportationModeStreamGenerator.mCurrentState).apply();
-//            sharedPrefs.edit().putInt("ConfirmedActivityType", TransportationModeStreamGenerator.mConfirmedActivityType).apply();
-//
-//            CSVHelper.storeToCSV(CSVHelper.CSV_CHECK_TRANSPORTATION,
-//                    ScheduleAndSampleManager.getCurrentTimeString(),
-//                    TransportationModeStreamGenerator.getConfirmedActivityString(),
-//                    ScheduleAndSampleManager.getTimeString(TransportationModeStreamGenerator.getSuspectTime()),
-//                    getActivityNameFromType(TransportationModeStreamGenerator.getSuspectedStartActivityType()),
-//                    getActivityNameFromType(TransportationModeStreamGenerator.getSuspectedStopActivityType()),
-//                    activityRecognitionDataRecord.getMostProbableActivity().toString(),
-//                    activityRecognitionDataRecord.getProbableActivities().toString());
-
-//            String suspectedStartActivity = getActivityNameFromType(transportationModeStreamGenerator.getSuspectedStartActivityType());
-//            String suspectedEndActivity = getActivityNameFromType(transportationModeStreamGenerator.getSuspectedStopActivityType());
-
-            NotificationDataRecord notificationDataRecord =
-                    new NotificationDataRecord(notificationStreamGenerator.getNotificaitonTitle(), notificationStreamGenerator.getNotificaitonText(), notificationStreamGenerator.getNotificaitonSubText()
-                            , notificationStreamGenerator.getNotificationTickerText(), notificationStreamGenerator.getNotificaitonPackageName() ,notificationStreamGenerator.getaccessid());
-            Log.e(TAG, "notification msg:  PackageName - " + notificationStreamGenerator.getNotificaitonPackageName() );
-//            MinukuStreamManager.getInstance().setNotificationDataRecord(notificationDataRecord, mContext, sharedPrefs);
 
         }catch (StreamNotFoundException e){
             e.printStackTrace();

@@ -131,6 +131,10 @@ public class NotificationStreamGenerator extends AndroidStreamGenerator<Notifica
             e.printStackTrace();
             return false;
         }
+
+        MinukuStreamManager.getInstance().setNotificationDataRecord(notificationDataRecord, mContext);
+
+
         return false;
     }
 

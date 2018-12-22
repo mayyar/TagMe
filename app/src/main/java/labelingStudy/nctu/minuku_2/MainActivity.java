@@ -49,6 +49,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
@@ -97,12 +101,25 @@ public class MainActivity extends AppCompatActivity {
     private static final String ENABLED_NOTIFICATION_LISTENERS = "enabled_notification_listeners";
     private static final String ACTION_NOTIFICATION_LISTENER_SETTINGS = "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS";
 
+    WebView mWebView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "Creating Main activity");
 
         setContentView(R.layout.activity_main);
+
+        mWebView = (WebView) findViewById(R.id.webview);
+        WebViewClient mWebViewClient = new WebViewClient();
+
+        // Force links and redirects to open in the WebView instead of in a browser
+        mWebView.setWebViewClient(mWebViewClient);
+
+        WebSettings webSettings = mWebView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+
+        mWebView.loadUrl("https://qtrial2017q2az1.az1.qualtrics.com/jfe/form/SV_0VA9kDhoEeWHuYd");
 
         sharedPrefs = getSharedPreferences(Constants.sharedPrefString, MODE_PRIVATE);
 
