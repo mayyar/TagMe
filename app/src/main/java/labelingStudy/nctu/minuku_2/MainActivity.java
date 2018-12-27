@@ -72,6 +72,7 @@ import labelingStudy.nctu.minuku.logger.Log;
 import labelingStudy.nctu.minuku.service.NotificationListenService;
 import labelingStudy.nctu.minuku_2.controller.DeviceIdPage;
 import labelingStudy.nctu.minuku_2.service.BackgroundService;
+import labelingStudy.nctu.minuku_2.view.customview.TagList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -109,6 +110,10 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "Creating Main activity");
 
         setContentView(R.layout.activity_main);
+
+        Intent i = new Intent();
+        i.setClass(this, TagList.class);
+        startActivity(i);
 
         mWebView = (WebView) findViewById(R.id.webview);
         WebViewClient mWebViewClient = new WebViewClient();
