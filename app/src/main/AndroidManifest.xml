@@ -154,7 +154,8 @@
             android:name="io.fabric.ApiKey"
             android:value="490219889f9c5227241662e1fa307d31f82f536d" />
 
-        <activity android:name=".view.customview.TagList"></activity>
+        <activity android:name=".model.TagList" />
+        <activity android:name=".model.Questionnaire"></activity>
     </application>
 
 </manifest>

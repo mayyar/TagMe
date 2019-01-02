@@ -33,7 +33,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
@@ -44,19 +43,12 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,14 +57,11 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import labelingStudy.nctu.minuku.config.Constants;
-import labelingStudy.nctu.minuku.event.DecrementLoadingProcessCountEvent;
-import labelingStudy.nctu.minuku.event.IncrementLoadingProcessCountEvent;
 import labelingStudy.nctu.minuku.logger.Log;
 //import labelingStudy.nctu.minuku_2.controller.CounterActivity;
 import labelingStudy.nctu.minuku.service.NotificationListenService;
-import labelingStudy.nctu.minuku_2.controller.DeviceIdPage;
 import labelingStudy.nctu.minuku_2.service.BackgroundService;
-import labelingStudy.nctu.minuku_2.view.customview.TagList;
+import labelingStudy.nctu.minuku_2.model.TagList;
 
 public class MainActivity extends AppCompatActivity {
 
