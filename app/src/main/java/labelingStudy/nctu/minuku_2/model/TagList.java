@@ -1,7 +1,9 @@
 package labelingStudy.nctu.minuku_2.model;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ListView;
 
 import labelingStudy.nctu.minuku.logger.Log;
@@ -12,6 +14,7 @@ public class TagList extends AppCompatActivity {
     private static final String TAG = "TagList";
 
     private ListView mListView;
+
 
 
     @Override
@@ -25,6 +28,14 @@ public class TagList extends AppCompatActivity {
         mListView.setAdapter(new MyAdapter(this));
     }
 
+     View.OnClickListener onclick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent intent = new Intent();
+            intent.setClass(TagList.this, Questionnaire.class);
+            startActivity(intent);
 
+        }
+    };
 
 }

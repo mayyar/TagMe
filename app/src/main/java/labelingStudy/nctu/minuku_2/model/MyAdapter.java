@@ -1,15 +1,18 @@
 package labelingStudy.nctu.minuku_2.model;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.DataSetObserver;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import labelingStudy.nctu.minuku.logger.Log;
+import labelingStudy.nctu.minuku_2.MainActivity;
 import labelingStudy.nctu.minuku_2.R;
 
 class MyAdapter extends BaseAdapter {
@@ -57,67 +60,23 @@ class MyAdapter extends BaseAdapter {
             holder = (Holder) v.getTag();
         }
         switch(i) {
-            case 0:
+            case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7: case 8: case 9:
                 holder.imageCategory.setImageResource(R.drawable.email);
                 holder.imageCheck.setImageResource(R.drawable.check);
                 holder.textContent.setText("cat");
                 holder.textTime.setText("00:00:00");
                 break;
-            case 1:
-                holder.imageCategory.setImageResource(R.drawable.email);
-                holder.imageCheck.setImageResource(R.drawable.check);
-                holder.textContent.setText("monkey");
-                holder.textTime.setText("00:00:00");
-                break;
-            case 2:
-                holder.imageCategory.setImageResource(R.drawable.email);
-                holder.imageCheck.setImageResource(R.drawable.check);
-                holder.textContent.setText("panda");
-                holder.textTime.setText("00:00:00");
-                break;
-            case 3:
-                holder.imageCategory.setImageResource(R.drawable.email);
-                holder.imageCheck.setImageResource(R.drawable.check);
-                holder.textContent.setText("cat");
-                holder.textTime.setText("00:00:00");
-                break;
-            case 4:
-                holder.imageCategory.setImageResource(R.drawable.email);
-                holder.imageCheck.setImageResource(R.drawable.check);
-                holder.textContent.setText("monkey");
-                holder.textTime.setText("00:00:00");
-                break;
-            case 5:
-                holder.imageCategory.setImageResource(R.drawable.email);
-                holder.imageCheck.setImageResource(R.drawable.check);
-                holder.textContent.setText("panda");
-                holder.textTime.setText("00:00:00");
-                break;
-            case 6:
-                holder.imageCategory.setImageResource(R.drawable.email);
-                holder.imageCheck.setImageResource(R.drawable.check);
-                holder.textContent.setText("cat");
-                holder.textTime.setText("00:00:00");
-                break;
-            case 7:
-                holder.imageCategory.setImageResource(R.drawable.email);
-                holder.imageCheck.setImageResource(R.drawable.check);
-                holder.textContent.setText("monkey");
-                holder.textTime.setText("00:00:00");
-                break;
-            case 8:
-                holder.imageCategory.setImageResource(R.drawable.email);
-                holder.imageCheck.setImageResource(R.drawable.check);
-                holder.textContent.setText("panda");
-                holder.textTime.setText("00:00:00");
-                break;
-            case 9:
-                holder.imageCategory.setImageResource(R.drawable.email);
-                holder.imageCheck.setImageResource(R.drawable.check);
-                holder.textContent.setText("panda");
-                holder.textTime.setText("00:00:00");
-                break;
+
         }
+        final View.OnClickListener onclick = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(layoutInflater.getContext(), Questionnaire.class);
+                view.getContext().startActivity(intent);
+            }
+        };
+        holder.imageCheck.setOnClickListener(onclick);
+
         return v;
     }
     class Holder{
@@ -127,5 +86,7 @@ class MyAdapter extends BaseAdapter {
         TextView textTime;
 
     }
+
+
 
 }
