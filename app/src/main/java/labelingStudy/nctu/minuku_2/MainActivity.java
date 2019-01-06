@@ -23,6 +23,7 @@
 package labelingStudy.nctu.minuku_2;
 
 import android.app.AlertDialog;
+import android.app.LauncherActivity;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
@@ -41,6 +42,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.View;
@@ -48,6 +51,8 @@ import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -60,8 +65,9 @@ import labelingStudy.nctu.minuku.config.Constants;
 import labelingStudy.nctu.minuku.logger.Log;
 //import labelingStudy.nctu.minuku_2.controller.CounterActivity;
 import labelingStudy.nctu.minuku.service.NotificationListenService;
+import labelingStudy.nctu.minuku_2.model.MyAdapter;
+import labelingStudy.nctu.minuku_2.model.Post;
 import labelingStudy.nctu.minuku_2.service.BackgroundService;
-import labelingStudy.nctu.minuku_2.model.TagList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -91,29 +97,18 @@ public class MainActivity extends AppCompatActivity {
     private static final String ENABLED_NOTIFICATION_LISTENERS = "enabled_notification_listeners";
     private static final String ACTION_NOTIFICATION_LISTENER_SETTINGS = "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS";
 
-    WebView mWebView;
+    private RecyclerView recyclerView;
+    MyAdapter myAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "Creating Main activity");
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_tag_list);
 
-        Intent i = new Intent();
-        i.setClass(this, TagList.class);
-        startActivity(i);
 
-        mWebView = (WebView) findViewById(R.id.webview);
-        WebViewClient mWebViewClient = new WebViewClient();
-
-        // Force links and redirects to open in the WebView instead of in a browser
-        mWebView.setWebViewClient(mWebViewClient);
-
-        WebSettings webSettings = mWebView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-
-        mWebView.loadUrl("https://qtrial2017q2az1.az1.qualtrics.com/jfe/form/SV_0VA9kDhoEeWHuYd");
 
         sharedPrefs = getSharedPreferences(Constants.sharedPrefString, MODE_PRIVATE);
 
@@ -172,7 +167,21 @@ public class MainActivity extends AppCompatActivity {
 //            e.printStackTrace();
 //            android.util.Log.e(TAG, "exception", e);
         }
+
+        recyclerView = (RecyclerView) findViewById(R.id.rcv);
+        ArrayList<Post> data = new ArrayList<>();
+        for(int i = 0; i < 10; i++){
+            data.add(new Post("notification content", "00:00:00"));
+        }
+
+        myAdapter = new MyAdapter(this, data);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(myAdapter);
+
     }
+
 
     private boolean isNotificationServiceEnabled(){
         android.util.Log.d(TAG, "isNotificationServiceEnabled");

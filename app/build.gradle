@@ -45,6 +45,7 @@ repositories {
     maven { url "https://jitpack.io" }
     maven { url 'https://maven.fabric.io/public' }
 
+
 }
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -66,8 +67,8 @@ dependencies {
     // Tag library
 
 
-    compile 'com.android.support:appcompat-v7:24.2.0'
-    compile 'com.android.support:design:25.1.0'
+//    compile 'com.android.support:appcompat-v7:24.2.0'
+//    compile 'com.android.support:design:25.1.0'
     compile 'com.google.guava:guava:19.0'
     compile 'com.github.boxme:squarecamera:1.1.0'
     compile 'com.h6ah4i.android.compat:mulsellistprefcompat:1.0.0'
@@ -78,11 +79,15 @@ dependencies {
     compile 'me.gujun.android.taggroup:library:1.4@aar'
     compile 'com.github.techfreak:wizardpager:1.0.0'
     compile 'com.android.support:cardview-v7:24.0.0'
-    compile 'com.android.support:recyclerview-v7:24.0.0'
+    compile 'com.android.support:recyclerview-v7:26.1.0'
     compile 'com.google.android.gms:play-services-maps:9.2.1'
     compile 'com.android.support:multidex-instrumentation:1.0.2'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.github.vipulasri:timelineview:1.0.5'
+
+    compile 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.android.support:design:26.1.0'
+
     testCompile 'junit:junit:4.12'
     compile('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
         transitive = true;

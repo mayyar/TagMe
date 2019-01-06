@@ -1,92 +1,111 @@
 package labelingStudy.nctu.minuku_2.model;
 
+
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.DataSetObserver;
+import android.support.v7.widget.AlertDialogLayout;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
-import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 
 import labelingStudy.nctu.minuku.logger.Log;
 import labelingStudy.nctu.minuku_2.MainActivity;
 import labelingStudy.nctu.minuku_2.R;
 
-class MyAdapter extends BaseAdapter {
+public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     private static final String TAG = "MyAdapter";
-    private LayoutInflater layoutInflater;
 
-    public MyAdapter(Context context) {
-        Log.d(TAG, "Get context");
+    private Context mContext;
+    private ArrayList<Post> mData;
 
-        layoutInflater = LayoutInflater.from(context);
 
+    public MyAdapter(Context context, ArrayList<Post> data) {
+        this.mContext = context;
+        this.mData = data;
     }
 
     @Override
-    public int getCount() {
-        return 10;
+    public MyAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(mContext)
+                .inflate(R.layout.adapter, parent, false);
+        ViewHolder holder = new ViewHolder(view);
+        holder.ivCategory = (ImageView) view.findViewById(R.id.iv_cat);
+        holder.tvContent = (TextView) view.findViewById(R.id.tv_content);
+        holder.tvTime = (TextView) view.findViewById(R.id.tv_time);
+        holder.ivcheck = (ImageView) view.findViewById(R.id.iv_check);
+
+        return holder;
     }
 
     @Override
-    public Object getItem(int i) {
-        return null;
-    }
+    public void onBindViewHolder(MyAdapter.ViewHolder holder, final int position) {
+        Post post = mData.get(position);
+        holder.tvTime.setText(post.time);
+        holder.tvContent.setText(post.content);
+        holder.ivcheck.setImageResource(R.drawable.uncheck);
+        holder.ivCategory.setImageResource(R.drawable.email);
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
 
-    @Override
-    public long getItemId(int i) {
-        return 0;
-    }
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                builder.setTitle("")
+                        .setMessage("Delete or not?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                mData.remove(position);
+                                notifyItemRemoved(position);
+                                notifyItemRangeChanged(position, mData.size());
+                                Toast.makeText(mContext, "Deletion occurred", Toast.LENGTH_LONG).show();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Toast.makeText(mContext, "Undo deletion", Toast.LENGTH_LONG).show();
+                            }
+                        })
+                        .show();
 
-    @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
-        Log.d(TAG, "Get view");
-        View v = view;
-        Holder holder;
-        if(v == null){
-            v = layoutInflater.inflate(R.layout.adapter, null);
-            holder = new Holder();
-            holder.imageCategory = (ImageView) v.findViewById(R.id.iv_cat);
-            holder.imageCheck = (ImageView) v.findViewById(R.id.iv_check);
-            holder.textContent = (TextView) v.findViewById(R.id.tv_content);
-            holder.textTime = (TextView) v.findViewById(R.id.tv_time);
+                return true;
+            }
+        });
 
-            v.setTag(holder);
-        } else{
-            holder = (Holder) v.getTag();
-        }
-        switch(i) {
-            case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7: case 8: case 9:
-                holder.imageCategory.setImageResource(R.drawable.email);
-                holder.imageCheck.setImageResource(R.drawable.check);
-                holder.textContent.setText("cat");
-                holder.textTime.setText("00:00:00");
-                break;
-
-        }
-        final View.OnClickListener onclick = new View.OnClickListener() {
+        holder.ivcheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(layoutInflater.getContext(), Questionnaire.class);
+                Intent intent = new Intent(mContext, Questionnaire.class);
                 view.getContext().startActivity(intent);
             }
-        };
-        holder.imageCheck.setOnClickListener(onclick);
-
-        return v;
-    }
-    class Holder{
-        ImageView imageCategory;
-        ImageView imageCheck;
-        TextView textContent;
-        TextView textTime;
-
+        });
     }
 
+    @Override
+    public int getItemCount() {
+        Log.d(TAG, "size: " + mData.size());
+        return mData.size();
+    }
 
+    class ViewHolder extends RecyclerView.ViewHolder {
 
+        public ImageView ivCategory;
+        public TextView tvTime;
+        public TextView tvContent;
+        public ImageView ivcheck;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
 }

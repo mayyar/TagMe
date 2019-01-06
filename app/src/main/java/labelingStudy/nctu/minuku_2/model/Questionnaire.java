@@ -33,9 +33,10 @@ public class Questionnaire extends AppCompatActivity {
     private Button.OnClickListener onclick = new Button.OnClickListener() {
         @Override
         public void onClick(View view) {
-            Intent intent = new Intent();
-            intent.setClass(Questionnaire.this, MainActivity.class);
-            startActivity(intent);
+//            Intent intent = new Intent();
+//            intent.setClass(Questionnaire.this, MainActivity.class);
+//            startActivity(intent);
+            finish();
         }
     };
 }
