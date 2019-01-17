@@ -171,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.rcv);
         ArrayList<Post> data = new ArrayList<>();
         for(int i = 0; i < 10; i++){
-            data.add(new Post("notification content", "00:00:00"));
+            data.add(new Post("PackageName", "Title", "notification content", "00:00:00"));
         }
 
         myAdapter = new MyAdapter(this, data);
@@ -450,4 +450,6 @@ public class MainActivity extends AppCompatActivity {
             container.removeView((View) object);
         }
     }
+
+
 }
