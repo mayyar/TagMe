@@ -23,7 +23,6 @@
 package labelingStudy.nctu.minuku_2;
 
 import android.app.AlertDialog;
-import android.app.LauncherActivity;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
@@ -48,12 +47,26 @@ import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.Toast;
+
+import com.android.volley.Cache;
+import com.android.volley.Network;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.BasicNetwork;
+import com.android.volley.toolbox.DiskBasedCache;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.HurlStack;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.JsonObject;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -100,6 +113,10 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     MyAdapter myAdapter;
 
+    String url ="http://notiaboutness.nctu.me/notification/save";
+
+
+    RequestQueue mRequestQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,11 +184,11 @@ public class MainActivity extends AppCompatActivity {
 //            e.printStackTrace();
 //            android.util.Log.e(TAG, "exception", e);
         }
-
+//###########################################################################
         recyclerView = (RecyclerView) findViewById(R.id.rcv);
         ArrayList<Post> data = new ArrayList<>();
         for(int i = 0; i < 10; i++){
-            data.add(new Post("PackageName", "Title", "notification content", "00:00:00"));
+            data.add(new Post("PackageName", "Title", "notification content", "00:00:00", false));
         }
 
         myAdapter = new MyAdapter(this, data);
@@ -179,6 +196,71 @@ public class MainActivity extends AppCompatActivity {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(myAdapter);
+
+//        HttpDataHandler();
+
+    }
+
+    public void HttpDataHandler(){
+        // Instantiate the cache
+        Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024); // 1MB cap
+
+        // Set up the network to use HttpURLConnection as the HTTP client.
+        Network network = new BasicNetwork(new HurlStack());
+
+        // Instantiate the RequestQueue with the cache and network.
+        mRequestQueue = new RequestQueue(cache, network);
+
+        // Start the queue
+        mRequestQueue.start();
+
+
+        StringRequest myStringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.e(TAG, "HttpDataHandler (onResponse): " + response);
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Log.e(TAG, "HttpDataHandler (onErrorResponse): That didn't work " + error);
+                Log.e(TAG, "HttpDataHandler (onErrorResponse): That didn't work " + error.networkResponse.statusCode);
+                NetworkResponse networkResponse = error.networkResponse;
+                if (networkResponse != null && networkResponse.data != null) {
+                    String jsonError = new String(networkResponse.data);
+                    // Print Error!
+                    Log.e(TAG, "HttpDataHandler (onErrorResponse): That didn't work " + jsonError);
+
+                }
+
+
+            }
+        }){
+
+            protected Map<String, String> getParams() {
+                Map<String, String> MyData = new HashMap<String, String>();
+                //MyData.put("_id", "1"); //Add the data you'd like to send to the server.
+                MyData.put("userId", "2");
+                MyData.put("notiId", "3");
+                MyData.put("title", "4");
+                MyData.put("packageName", "5");
+                MyData.put("content", "6");
+                //MyData.put("timestamp", "7");
+
+                Log.e(TAG, "HttpDataHandler (getParams): put Data Ready!");
+
+                return MyData;
+            }
+
+        };
+
+
+//        mRequestQueue = Volley.newRequestQueue(this);
+
+        mRequestQueue.add(myStringRequest);
+        Log.e(TAG, "HttpDataHandler: Insert success");
 
     }
 

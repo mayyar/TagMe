@@ -94,4 +94,7 @@
         <item>I don\'t give a damn!</item>
     </string-array>
 
+    <item type="id" name="tag_first"></item>
+    <item type="id" name="tag_second"></item>
+
 </resources>

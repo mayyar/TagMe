@@ -27,7 +27,7 @@ import labelingStudy.nctu.minuku_2.MainActivity;
 import labelingStudy.nctu.minuku_2.R;
 
 import static android.app.Activity.RESULT_OK;
-import static labelingStudy.nctu.minuku_2.model.Questionnaire.checkStatus;
+import static labelingStudy.nctu.minuku_2.model.Questionnaire.selectedPosition;
 
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
@@ -37,9 +37,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private Context mContext;
     private ArrayList<Post> mData;
 
-    public static final int FUNC_LOGIN = 1;
+//    public static int selectedPosition = -1;
 
-    Button submit;
 
 
     public MyAdapter(Context context, ArrayList<Post> data) {
@@ -68,6 +67,17 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         holder.tvContent.setText(post.content);
         holder.tvPackageName.setText(post.packageName);
         holder.tvTitle.setText(post.title);
+
+        if(position == selectedPosition) {
+            holder.btnCheck.setText("已完成");
+            holder.btnCheck.setBackgroundColor(Color.RED);
+            holder.btnCheck.setTextColor(Color.WHITE);
+            selectedPosition = -1;
+        }
+        else {
+            holder.btnCheck.setText("填寫問卷");
+        }
+
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -100,10 +110,16 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         holder.btnCheck.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View view) {
+//                selectedPosition = position;
 
                 Intent intent = new Intent(mContext, Questionnaire.class);
-                ((Activity) mContext).startActivityForResult(intent, FUNC_LOGIN);
+//                mContext.startActivity(intent);
 
+                intent.putExtra("PersonID", position);
+                mContext.startActivity(intent);
+
+                notifyItemChanged(position);
+//                notifyDataSetChanged();
             }
 
         });
