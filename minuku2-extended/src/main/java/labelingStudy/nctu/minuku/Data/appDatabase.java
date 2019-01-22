@@ -1,7 +1,7 @@
 package labelingStudy.nctu.minuku.Data;
 
-import android.arch.persistence.room.Database;
-import android.arch.persistence.room.RoomDatabase;
+import androidx.room.Database;
+import androidx.room.RoomDatabase;
 
 import labelingStudy.nctu.minuku.dao.AccessibilityDataRecordDAO;
 import labelingStudy.nctu.minuku.dao.ActivityRecognitionDataRecordDAO;

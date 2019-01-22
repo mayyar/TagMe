@@ -1,8 +1,8 @@
 package labelingStudy.nctu.minuku.model.DataRecord;
 
-import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.PrimaryKey;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 import android.util.Log;
 
 import java.util.Date;

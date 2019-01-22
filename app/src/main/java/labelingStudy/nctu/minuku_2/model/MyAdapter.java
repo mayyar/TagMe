@@ -1,32 +1,26 @@
 package labelingStudy.nctu.minuku_2.model;
 
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.preference.PreferenceManager;
-import android.support.v7.widget.AlertDialogLayout;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.appcompat.widget.AlertDialogLayout;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.CycleInterpolator;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import labelingStudy.nctu.minuku.logger.Log;
-import labelingStudy.nctu.minuku_2.MainActivity;
 import labelingStudy.nctu.minuku_2.R;
 
-import static android.app.Activity.RESULT_OK;
 import static labelingStudy.nctu.minuku_2.model.Questionnaire.selectedPosition;
 
 
@@ -68,10 +62,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         holder.tvPackageName.setText(post.packageName);
         holder.tvTitle.setText(post.title);
 
-        if(position == selectedPosition) {
+        if(post.check) {
             holder.btnCheck.setText("已完成");
             holder.btnCheck.setBackgroundColor(Color.RED);
             holder.btnCheck.setTextColor(Color.WHITE);
+            holder.btnCheck.setEnabled(false);
             selectedPosition = -1;
         }
         else {
@@ -118,8 +113,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                 intent.putExtra("PersonID", position);
                 mContext.startActivity(intent);
 
-                notifyItemChanged(position);
-//                notifyDataSetChanged();
+//                notifyItemChanged(position);
+                notifyDataSetChanged();
             }
 
         });

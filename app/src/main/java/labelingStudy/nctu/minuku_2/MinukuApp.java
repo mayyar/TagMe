@@ -53,7 +53,7 @@ public class MinukuApp extends android.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics(), new CrashlyticsNdk());
+//        Fabric.with(this, new Crashlytics(), new CrashlyticsNdk());
         Config mConfig = new Config();
         mConfig.setPersistenceEnabled(true);
         long cacheSizeOfHundredMB = 100 * 1024 * 1024;

@@ -2,12 +2,12 @@ package labelingStudy.nctu.minuku.streamgenerator;
 
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
-import android.arch.persistence.room.Room;
+import androidx.room.Room;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -29,26 +29,14 @@ import labelingStudy.nctu.minuku.Utilities.CSVHelper;
 import labelingStudy.nctu.minuku.Utilities.ScheduleAndSampleManager;
 import labelingStudy.nctu.minuku.Utilities.Utils;
 import labelingStudy.nctu.minuku.config.Constants;
-import labelingStudy.nctu.minuku.dao.ActivityRecognitionDataRecordDAO;
-import labelingStudy.nctu.minuku.manager.MinukuDAOManager;
 import labelingStudy.nctu.minuku.manager.MinukuStreamManager;
-import labelingStudy.nctu.minuku.manager.SessionManager;
 import labelingStudy.nctu.minuku.model.DataRecord.ActivityRecognitionDataRecord;
-import labelingStudy.nctu.minuku.model.DataRecord.NotificationDataRecord;
 import labelingStudy.nctu.minuku.model.DataRecord.TransportationModeDataRecord;
 import labelingStudy.nctu.minuku.service.ActivityRecognitionService;
 import labelingStudy.nctu.minuku.stream.ActivityRecognitionStream;
-import labelingStudy.nctu.minukucore.dao.DAOException;
 import labelingStudy.nctu.minukucore.exception.StreamAlreadyExistsException;
 import labelingStudy.nctu.minukucore.exception.StreamNotFoundException;
 import labelingStudy.nctu.minukucore.stream.Stream;
-
-import static labelingStudy.nctu.minuku.streamgenerator.NotificationStreamGenerator.accessid;
-import static labelingStudy.nctu.minuku.streamgenerator.NotificationStreamGenerator.mNotificaitonPackageName;
-import static labelingStudy.nctu.minuku.streamgenerator.NotificationStreamGenerator.mNotificaitonSubText;
-import static labelingStudy.nctu.minuku.streamgenerator.NotificationStreamGenerator.mNotificaitonText;
-import static labelingStudy.nctu.minuku.streamgenerator.NotificationStreamGenerator.mNotificaitonTitle;
-import static labelingStudy.nctu.minuku.streamgenerator.NotificationStreamGenerator.mNotificationTickerText;
 
 /**
  * Created by Lawrence on 2017/5/15.

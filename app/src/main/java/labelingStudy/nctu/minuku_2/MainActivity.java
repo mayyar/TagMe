@@ -23,6 +23,7 @@
 package labelingStudy.nctu.minuku_2;
 
 import android.app.AlertDialog;
+import android.app.Application;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
@@ -34,15 +35,15 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import com.google.android.material.tabs.TabLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.View;
@@ -56,17 +57,10 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
-import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.HurlStack;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.google.gson.JsonObject;
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -98,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
     public final int REQUEST_ID_MULTIPLE_PERMISSIONS=1;
     public static View timerview,recordview,checkpointview;
 
-    public static android.support.design.widget.TabLayout mTabs;
+    public static TabLayout mTabs;
     public static ViewPager mViewPager;
 
     private SharedPreferences sharedPrefs;
@@ -112,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     MyAdapter myAdapter;
+    public static ArrayList<Post> data;
 
     String url ="http://notiaboutness.nctu.me/notification/save";
 
@@ -186,19 +181,24 @@ public class MainActivity extends AppCompatActivity {
         }
 //###########################################################################
         recyclerView = (RecyclerView) findViewById(R.id.rcv);
-        ArrayList<Post> data = new ArrayList<>();
+        data = new ArrayList<>();
         for(int i = 0; i < 10; i++){
             data.add(new Post("PackageName", "Title", "notification content", "00:00:00", false));
         }
 
         myAdapter = new MyAdapter(this, data);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        layoutManager.setOrientation(RecyclerView.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(myAdapter);
 
 //        HttpDataHandler();
 
+    }
+
+
+    public static ArrayList<Post> getAdapterData(){
+        return data;
     }
 
     public void HttpDataHandler(){
@@ -316,6 +316,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
+        myAdapter.notifyDataSetChanged();
         Log.d(TAG,"onResume");
 
     }

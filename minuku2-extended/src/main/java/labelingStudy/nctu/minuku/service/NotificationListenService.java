@@ -1,12 +1,8 @@
 package labelingStudy.nctu.minuku.service;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.KeyguardManager;
 import android.app.Notification;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -17,15 +13,13 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 import android.util.Log;
 
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
-import labelingStudy.nctu.minuku.R;
-import labelingStudy.nctu.minuku.config.Constants;
 import labelingStudy.nctu.minuku.manager.MinukuStreamManager;
 import labelingStudy.nctu.minuku.model.DataRecord.NotificationDataRecord;
 import labelingStudy.nctu.minuku.streamgenerator.NotificationStreamGenerator;

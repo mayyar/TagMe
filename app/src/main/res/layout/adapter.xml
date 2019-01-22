@@ -25,6 +25,9 @@
                     android:id="@+id/tv_appname"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginRight="10dp"
                     android:layout_weight="1"
                     android:text="AppName"
                     android:textSize="10sp" />
@@ -33,6 +36,8 @@
                     android:id="@+id/tv_time"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginRight="10dp"
                     android:layout_weight="1"
                     android:text="time"
                     android:textSize="10sp" />
@@ -43,6 +48,8 @@
                 android:id="@+id/tv_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:text="TextView"
                 android:textStyle="bold" />
 
@@ -50,6 +57,8 @@
                 android:id="@+id/tv_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:layout_weight="1"
                 android:text="content"
                 android:textSize="12sp" />
@@ -60,14 +69,15 @@
 
                 <Button
                     android:id="@+id/btn_check"
-                    android:layout_width="128dp"
-                    android:layout_height="19dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="34dp"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentEnd="true"
+                    android:layout_marginRight="10dp"
                     android:background="@color/accept_button"
                     android:elevation="0dp"
                     android:text="填寫問卷"
-                    android:textSize="12sp"
+                    android:textSize="10sp"
                     android:textStyle="bold" />
             </RelativeLayout>
 

@@ -4,9 +4,9 @@ package labelingStudy.nctu.minuku.model.DataRecord;
  * Created by Lawrence on 2017/7/22.
  */
 
-import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.PrimaryKey;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 import android.util.Log;
 
 import labelingStudy.nctu.minukucore.model.DataRecord;

@@ -16,4 +16,6 @@ public class Post {
         this.time = time;
         this.check = check;
     }
+
+
 }
