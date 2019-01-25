@@ -36,6 +36,7 @@ import java.util.List;
 
 import labelingStudy.nctu.minuku.Data.appDatabase;
 import labelingStudy.nctu.minuku.config.Constants;
+import labelingStudy.nctu.minuku.dao.SensorDataRecordDAO;
 import labelingStudy.nctu.minuku.logger.Log;
 import labelingStudy.nctu.minuku.manager.MinukuStreamManager;
 import labelingStudy.nctu.minuku.model.DataRecord.SensorDataRecord;
@@ -66,6 +67,8 @@ public class SensorStreamGenerator extends AndroidStreamGenerator<SensorDataReco
     /**system components**/
     private static Context mContext;
     private static SensorManager mSensorManager;
+    private SensorDataRecordDAO sensorDataRecordDAO;
+
     private static List<Sensor> SensorList;
 
     public static final String STRING_PHONE_SENSOR_ACCELEROMETER = "Sensor-Accelerometer";
@@ -127,6 +130,7 @@ public class SensorStreamGenerator extends AndroidStreamGenerator<SensorDataReco
         mContext = applicationContext;
         //call sensor manager from the service
         mSensorManager = (SensorManager) mContext.getSystemService(mContext.SENSOR_SERVICE);
+        sensorDataRecordDAO = appDatabase.getDatabase(applicationContext).sensorDataRecordDao();
 
         //initiate values of sensors
         mAccele_x = mAccele_y = mAccele_z = CONTEXT_SOURCE_INVALID_VALUE_FLOAT; //-9999
@@ -189,26 +193,26 @@ public class SensorStreamGenerator extends AndroidStreamGenerator<SensorDataReco
         //post an event
         EventBus.getDefault().post(sensorDataRecord);
         try {
-            appDatabase db;
-            db = Room.databaseBuilder(mContext,appDatabase.class,"dataCollection")
-                    .allowMainThreadQueries()
-                    .build();
-            db.sensorDataRecordDao().insertAll(sensorDataRecord);
-            List<SensorDataRecord> sensorDataRecords = db.sensorDataRecordDao().getAll();
+//            appDatabase db;
+//            db = Room.databaseBuilder(mContext,appDatabase.class,"dataCollection")
+//                    .allowMainThreadQueries()
+//                    .build();
+            sensorDataRecordDAO.insertAll(sensorDataRecord);
+            List<SensorDataRecord> sensorDataRecords = sensorDataRecordDAO.getAll();
 
             for (SensorDataRecord s : sensorDataRecords) {
-                Log.e(TAG," Accele: "+ s.getmAccele_str());
-                Log.e(TAG," AmbientTemperature: "+ s.getmAmbientTemperature_str());
-                Log.e(TAG," Gravity: "+ s.getmGravity_str());
+                Log.d(TAG," Accele: "+ s.getmAccele_str());
+                Log.d(TAG," AmbientTemperature: "+ s.getmAmbientTemperature_str());
+                Log.d(TAG," Gravity: "+ s.getmGravity_str());
 
-                Log.e(TAG," Gyroscope: "+ s.getmGyroscope_str());
-                Log.e(TAG," Light: "+ s.getmLight_str());
-                Log.e(TAG," LinearAcceleration: "+ s.getmLinearAcceleration_str());
-                Log.e(TAG," MagneticField: "+ s.getmMagneticField_str());
-                Log.e(TAG," Pressure: "+ s.getmPressure_str());
-                Log.e(TAG," Proximity: "+ s.getmProximity_str());
-                Log.e(TAG," RelativeHumidity: "+ s.getmRelativeHumidity_str());
-                Log.e(TAG," RotationVector: "+ s.getmRotationVector_str());
+                Log.d(TAG," Gyroscope: "+ s.getmGyroscope_str());
+                Log.d(TAG," Light: "+ s.getmLight_str());
+                Log.d(TAG," LinearAcceleration: "+ s.getmLinearAcceleration_str());
+                Log.d(TAG," MagneticField: "+ s.getmMagneticField_str());
+                Log.d(TAG," Pressure: "+ s.getmPressure_str());
+                Log.d(TAG," Proximity: "+ s.getmProximity_str());
+                Log.d(TAG," RelativeHumidity: "+ s.getmRelativeHumidity_str());
+                Log.d(TAG," RotationVector: "+ s.getmRotationVector_str());
 
             }
         } catch (NullPointerException e) {

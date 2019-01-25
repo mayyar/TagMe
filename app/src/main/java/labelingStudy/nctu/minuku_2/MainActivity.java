@@ -71,10 +71,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import labelingStudy.nctu.minuku.config.Constants;
 import labelingStudy.nctu.minuku.logger.Log;
 //import labelingStudy.nctu.minuku_2.controller.CounterActivity;
+import labelingStudy.nctu.minuku.model.DataRecord.NotificationDataRecord;
 import labelingStudy.nctu.minuku.service.NotificationListenService;
 import labelingStudy.nctu.minuku_2.model.MyAdapter;
 import labelingStudy.nctu.minuku_2.model.Post;
 import labelingStudy.nctu.minuku_2.service.BackgroundService;
+
+import static labelingStudy.nctu.minuku.streamgenerator.NotificationStreamGenerator.mNotificaitonPackageName;
+import static labelingStudy.nctu.minuku.streamgenerator.NotificationStreamGenerator.mNotificaitonText;
+import static labelingStudy.nctu.minuku.streamgenerator.NotificationStreamGenerator.mNotificaitonTitle;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -108,10 +113,10 @@ public class MainActivity extends AppCompatActivity {
     MyAdapter myAdapter;
     public static ArrayList<Post> data;
 
-    String url ="http://notiaboutness.nctu.me/notification/save";
-
-
-    RequestQueue mRequestQueue;
+//    String url ="http://notiaboutness.nctu.me/notification/save";
+//
+//
+//    RequestQueue mRequestQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -201,68 +206,69 @@ public class MainActivity extends AppCompatActivity {
         return data;
     }
 
-    public void HttpDataHandler(){
-        // Instantiate the cache
-        Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024); // 1MB cap
-
-        // Set up the network to use HttpURLConnection as the HTTP client.
-        Network network = new BasicNetwork(new HurlStack());
-
-        // Instantiate the RequestQueue with the cache and network.
-        mRequestQueue = new RequestQueue(cache, network);
-
-        // Start the queue
-        mRequestQueue.start();
-
-
-        StringRequest myStringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.e(TAG, "HttpDataHandler (onResponse): " + response);
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-                Log.e(TAG, "HttpDataHandler (onErrorResponse): That didn't work " + error);
-                Log.e(TAG, "HttpDataHandler (onErrorResponse): That didn't work " + error.networkResponse.statusCode);
-                NetworkResponse networkResponse = error.networkResponse;
-                if (networkResponse != null && networkResponse.data != null) {
-                    String jsonError = new String(networkResponse.data);
-                    // Print Error!
-                    Log.e(TAG, "HttpDataHandler (onErrorResponse): That didn't work " + jsonError);
-
-                }
-
-
-            }
-        }){
-
-            protected Map<String, String> getParams() {
-                Map<String, String> MyData = new HashMap<String, String>();
-                //MyData.put("_id", "1"); //Add the data you'd like to send to the server.
-                MyData.put("userId", "2");
-                MyData.put("notiId", "3");
-                MyData.put("title", "4");
-                MyData.put("packageName", "5");
-                MyData.put("content", "6");
-                //MyData.put("timestamp", "7");
-
-                Log.e(TAG, "HttpDataHandler (getParams): put Data Ready!");
-
-                return MyData;
-            }
-
-        };
-
-
-//        mRequestQueue = Volley.newRequestQueue(this);
-
-        mRequestQueue.add(myStringRequest);
-        Log.e(TAG, "HttpDataHandler: Insert success");
-
-    }
+//    public void HttpDataHandler(){
+//        // Instantiate the cache
+//        Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024); // 1MB cap
+//
+//        // Set up the network to use HttpURLConnection as the HTTP client.
+//        Network network = new BasicNetwork(new HurlStack());
+//
+//        // Instantiate the RequestQueue with the cache and network.
+//        mRequestQueue = new RequestQueue(cache, network);
+//
+//        // Start the queue
+//        mRequestQueue.start();
+//
+//
+//        StringRequest myStringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+//            @Override
+//            public void onResponse(String response) {
+//                Log.e(TAG, "HttpDataHandler (onResponse): " + response);
+//
+//            }
+//        }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//
+//                Log.e(TAG, "HttpDataHandler (onErrorResponse): That didn't work " + error);
+//                Log.e(TAG, "HttpDataHandler (onErrorResponse): That didn't work " + error.networkResponse.statusCode);
+//                NetworkResponse networkResponse = error.networkResponse;
+//                if (networkResponse != null && networkResponse.data != null) {
+//                    String jsonError = new String(networkResponse.data);
+//                    // Print Error!
+//                    Log.e(TAG, "HttpDataHandler (onErrorResponse): That didn't work " + jsonError);
+//
+//                }
+//
+//
+//            }
+//        }){
+//
+//            protected Map<String, String> getParams() {
+//                Map<String, String> MyData = new HashMap<String, String>();
+//                //MyData.put("_id", "1"); //Add the data you'd like to send to the server.
+//                MyData.put("userId", Constants.DEVICE_ID); //Constants.DEVICE_ID
+//                MyData.put("notiId", "0");
+//                MyData.put("title", mNotificaitonTitle); //mNotificaitonTitle
+//                MyData.put("packageName", mNotificaitonPackageName); //mNotificaitonPackageName
+//                MyData.put("category", "test");
+//                MyData.put("content", mNotificaitonText);//mNotificaitonText
+//                //MyData.put("timestamp", "7");
+//
+//                Log.e(TAG, "HttpDataHandler (getParams): put Data Ready!");
+//
+//                return MyData;
+//            }
+//
+//        };
+//
+//
+////        mRequestQueue = Volley.newRequestQueue(this);
+//
+//        mRequestQueue.add(myStringRequest);
+//        Log.e(TAG, "HttpDataHandler: Insert success");
+//
+//    }
 
 
     private boolean isNotificationServiceEnabled(){

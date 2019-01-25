@@ -15,6 +15,7 @@ import java.util.List;
 
 import labelingStudy.nctu.minuku.Data.appDatabase;
 import labelingStudy.nctu.minuku.config.Constants;
+import labelingStudy.nctu.minuku.dao.RingerDataRecordDAO;
 import labelingStudy.nctu.minuku.manager.MinukuStreamManager;
 import labelingStudy.nctu.minuku.model.DataRecord.RingerDataRecord;
 import labelingStudy.nctu.minuku.stream.RingerStream;
@@ -62,6 +63,8 @@ public class RingerStreamGenerator extends AndroidStreamGenerator<RingerDataReco
     public static int mainThreadUpdateFrequencyInSeconds = 10;
     public static long mainThreadUpdateFrequencyInMilliseconds = mainThreadUpdateFrequencyInSeconds *Constants.MILLISECONDS_PER_SECOND;
 
+    private RingerDataRecordDAO ringerDataRecordDAO;
+
     private Context mContext;
 
     private static Handler mMainThread;
@@ -71,6 +74,7 @@ public class RingerStreamGenerator extends AndroidStreamGenerator<RingerDataReco
 
         this.mContext = applicationContext;
         this.mStream = new RingerStream(Constants.DEFAULT_QUEUE_SIZE);
+        ringerDataRecordDAO = appDatabase.getDatabase(applicationContext).ringerDataRecordDao();
 
         sharedPrefs = mContext.getSharedPreferences(Constants.sharedPrefString,Context.MODE_PRIVATE);
 
@@ -115,21 +119,21 @@ public class RingerStreamGenerator extends AndroidStreamGenerator<RingerDataReco
         // also post an event.
         EventBus.getDefault().post(ringerDataRecord);
         try {
-            appDatabase db;
-            db = Room.databaseBuilder(mContext,appDatabase.class,"dataCollection")
-                    .allowMainThreadQueries()
-                    .build();
-            db.ringerDataRecordDao().insertAll(ringerDataRecord);
+//            appDatabase db;
+//            db = Room.databaseBuilder(mContext,appDatabase.class,"dataCollection")
+//                    .allowMainThreadQueries()
+//                    .build();
+            ringerDataRecordDAO.insertAll(ringerDataRecord);
 
-            List<RingerDataRecord> ringerDataRecords = db.ringerDataRecordDao().getAll();
+            List<RingerDataRecord> ringerDataRecords = ringerDataRecordDAO.getAll();
             for (RingerDataRecord r : ringerDataRecords) {
-                labelingStudy.nctu.minuku.logger.Log.e(TAG," RingerMode: "+ r.getRingerMode());
-                labelingStudy.nctu.minuku.logger.Log.e(TAG," AudioMode: "+ r.getAudioMode());
-                labelingStudy.nctu.minuku.logger.Log.e(TAG," StreamVolumeMusic: "+ String.valueOf(r.getStreamVolumeMusic()));
-                labelingStudy.nctu.minuku.logger.Log.e(TAG," StreamVolumeNotification: "+ String.valueOf(r.getStreamVolumeNotification()));
-                labelingStudy.nctu.minuku.logger.Log.e(TAG," StreamVolumeRing: "+ String.valueOf(r.getStreamVolumeRing()));
-                labelingStudy.nctu.minuku.logger.Log.e(TAG," StreamVolumeVoicecall: "+ String.valueOf(r.getStreamVolumeVoicecall()));
-                labelingStudy.nctu.minuku.logger.Log.e(TAG," StreamVolumeSystem: "+ String.valueOf(r.getStreamVolumeSystem()));
+                labelingStudy.nctu.minuku.logger.Log.d(TAG," RingerMode: "+ r.getRingerMode());
+                labelingStudy.nctu.minuku.logger.Log.d(TAG," AudioMode: "+ r.getAudioMode());
+                labelingStudy.nctu.minuku.logger.Log.d(TAG," StreamVolumeMusic: "+ String.valueOf(r.getStreamVolumeMusic()));
+                labelingStudy.nctu.minuku.logger.Log.d(TAG," StreamVolumeNotification: "+ String.valueOf(r.getStreamVolumeNotification()));
+                labelingStudy.nctu.minuku.logger.Log.d(TAG," StreamVolumeRing: "+ String.valueOf(r.getStreamVolumeRing()));
+                labelingStudy.nctu.minuku.logger.Log.d(TAG," StreamVolumeVoicecall: "+ String.valueOf(r.getStreamVolumeVoicecall()));
+                labelingStudy.nctu.minuku.logger.Log.d(TAG," StreamVolumeSystem: "+ String.valueOf(r.getStreamVolumeSystem()));
             }
         } catch (NullPointerException e){ //Sometimes no data is normal
             e.printStackTrace();

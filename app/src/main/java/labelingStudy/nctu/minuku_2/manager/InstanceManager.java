@@ -125,8 +125,8 @@ public class InstanceManager {
         AccessibilityStreamGenerator accessibilityStreamGenerator =
                 new AccessibilityStreamGenerator(getApplicationContext());
 
-        SensorStreamGenerator sensorStreamGenerator =
-                new SensorStreamGenerator(getApplicationContext());
+//        SensorStreamGenerator sensorStreamGenerator =
+//                new SensorStreamGenerator(getApplicationContext());
 
         NotificationStreamGenerator notificationStreamGenerator =
                 new NotificationStreamGenerator(getApplicationContext());

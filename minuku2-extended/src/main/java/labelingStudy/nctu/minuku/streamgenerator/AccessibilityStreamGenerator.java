@@ -12,6 +12,7 @@ import java.util.List;
 import labelingStudy.nctu.minuku.Data.appDatabase;
 import labelingStudy.nctu.minuku.Utilities.ScheduleAndSampleManager;
 import labelingStudy.nctu.minuku.config.Constants;
+import labelingStudy.nctu.minuku.dao.AccessibilityDataRecordDAO;
 import labelingStudy.nctu.minuku.logger.Log;
 import labelingStudy.nctu.minuku.model.DataRecord.AccessibilityDataRecord;
 import labelingStudy.nctu.minuku.service.MobileAccessibilityService;
@@ -31,6 +32,8 @@ public class AccessibilityStreamGenerator extends AndroidStreamGenerator<Accessi
     private final String TAG = "AccessibilityStreamGenerator";
     private AccessibilityStream mStream;
     private Context mContext;
+    private AccessibilityDataRecordDAO accessibilityDataRecordDAO;
+
     MobileAccessibilityService mobileAccessibilityService;
 
     private String pack;
@@ -46,7 +49,7 @@ public class AccessibilityStreamGenerator extends AndroidStreamGenerator<Accessi
         super(applicationContext);
         this.mContext = applicationContext;
         this.mStream = new AccessibilityStream(Constants.DEFAULT_QUEUE_SIZE);
-
+        accessibilityDataRecordDAO = appDatabase.getDatabase(applicationContext).accessibilityDataRecordDao();
         mobileAccessibilityService = new MobileAccessibilityService(this);
 
         pack = text = type = extra = Constants.INVALID_STRING_VALUE;
@@ -114,19 +117,19 @@ public class AccessibilityStreamGenerator extends AndroidStreamGenerator<Accessi
         EventBus.getDefault().post(accessibilityDataRecord);
         try {
 
-            appDatabase db;
-            db = Room.databaseBuilder(mContext,appDatabase.class,"dataCollection")
-                    .allowMainThreadQueries()
-                    .build();
+//            appDatabase db;
+//            db = Room.databaseBuilder(mContext,appDatabase.class,"dataCollection")
+//                    .allowMainThreadQueries()
+//                    .build();
 
-            db.accessibilityDataRecordDao().insertAll(accessibilityDataRecord);
-            List<AccessibilityDataRecord> accessibilityDataRecords = db.accessibilityDataRecordDao().getAll();
+            accessibilityDataRecordDAO.insertAll(accessibilityDataRecord);
+            List<AccessibilityDataRecord> accessibilityDataRecords = accessibilityDataRecordDAO.getAll();
 
             for (AccessibilityDataRecord a : accessibilityDataRecords) {
-                Log.e(TAG, "pack in db: "+a.getPack());
-                Log.e(TAG, "Type in db: "+a.getType());
-                Log.e(TAG, "Text in db: "+a.getText());
-                Log.e(TAG, "Extra in db: "+a.getExtra());
+                Log.d(TAG, "pack in db: "+a.getPack());
+                Log.d(TAG, "Type in db: "+a.getType());
+                Log.d(TAG, "Text in db: "+a.getText());
+                Log.d(TAG, "Extra in db: "+a.getExtra());
             }
         } catch (NullPointerException e){
             e.printStackTrace();

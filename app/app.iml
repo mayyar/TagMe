@@ -84,6 +84,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/shaders" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/build/.DS_Store" />
       <excludeFolder url="file://$MODULE_DIR$/build/generated/not_namespaced_r_class_sources" />
       <excludeFolder url="file://$MODULE_DIR$/build/generated/source/r" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/annotation_processor_list" />
@@ -254,6 +255,9 @@
     <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-gass:9.2.1@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.collection:collection:1.0.0@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.github.boxme:squarecamera:1.1.0@aar" level="project" />
+    <orderEntry type="module" module-name="minukucore" />
+    <orderEntry type="module" module-name="minuku2-extended" />
+    <orderEntry type="module" module-name="opencsv-3.10" />
     <orderEntry type="module" module-name="minukucore" />
     <orderEntry type="module" module-name="minuku2-extended" />
     <orderEntry type="module" module-name="opencsv-3.10" />

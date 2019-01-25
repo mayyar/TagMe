@@ -23,6 +23,7 @@ import java.util.TreeMap;
 
 import labelingStudy.nctu.minuku.Data.appDatabase;
 import labelingStudy.nctu.minuku.config.Constants;
+import labelingStudy.nctu.minuku.dao.AppUsageDataRecordDAO;
 import labelingStudy.nctu.minuku.logger.Log;
 import labelingStudy.nctu.minuku.manager.MinukuStreamManager;
 import labelingStudy.nctu.minuku.model.DataRecord.AppUsageDataRecord;
@@ -43,6 +44,8 @@ public class AppUsageStreamGenerator extends AndroidStreamGenerator<AppUsageData
     private AppUsageStream mStream;
     private String TAG = "AppUsageStreamGenerator";
     private PowerManager mPowerManager;
+    private AppUsageDataRecordDAO appUsageDataRecordDAO;
+
     private static ActivityManager mActivityManager;
 
     private static HashMap<String, String> mAppPackageNameHmap;
@@ -105,6 +108,7 @@ public class AppUsageStreamGenerator extends AndroidStreamGenerator<AppUsageData
 
         mContext = applicationContext;
         this.mStream = new AppUsageStream(Constants.LOCATION_QUEUE_SIZE);
+        appUsageDataRecordDAO = appDatabase.getDatabase(applicationContext).appUsageDataRecordDao();
 
         mPowerManager = (PowerManager) applicationContext.getSystemService(POWER_SERVICE);
         sharedPrefs = mContext.getSharedPreferences(Constants.sharedPrefString, mContext.MODE_PRIVATE);
@@ -154,17 +158,17 @@ public class AppUsageStreamGenerator extends AndroidStreamGenerator<AppUsageData
                 EventBus.getDefault().post(appUsageDataRecord);
 
                 try {
-                    appDatabase db;
-                    db = Room.databaseBuilder(mContext,appDatabase.class,"dataCollection")
-                            .allowMainThreadQueries()
-                            .build();
-                    db.appUsageDataRecordDao().insertAll(appUsageDataRecord);
-                    List<AppUsageDataRecord> appUsageDataRecords = db.appUsageDataRecordDao().getAll();
+//                    appDatabase db;
+//                    db = Room.databaseBuilder(mContext,appDatabase.class,"dataCollection")
+//                            .allowMainThreadQueries()
+//                            .build();
+                    appUsageDataRecordDAO.insertAll(appUsageDataRecord);
+                    List<AppUsageDataRecord> appUsageDataRecords = appUsageDataRecordDAO.getAll();
                     Log.d(TAG, "test test");
                     for (AppUsageDataRecord a : appUsageDataRecords) {
-                        Log.e(TAG, "Latest_Used_App "+a.getLatest_Used_App());
-                        Log.e(TAG, "Latest_Foreground_Activity "+a.getLatest_Foreground_Activity());
-                        Log.e(TAG, "getScreen_Status "+a.getScreen_Status());
+                        Log.d(TAG, "Latest_Used_App "+a.getLatest_Used_App());
+                        Log.d(TAG, "Latest_Foreground_Activity "+a.getLatest_Foreground_Activity());
+                        Log.d(TAG, "getScreen_Status "+a.getScreen_Status());
                     }
                 } catch (NullPointerException e) {
                     e.printStackTrace();
@@ -185,18 +189,18 @@ public class AppUsageStreamGenerator extends AndroidStreamGenerator<AppUsageData
                 EventBus.getDefault().post(appUsageDataRecord);
 
                 try {
-                    appDatabase db;
-                    db = Room.databaseBuilder(mContext,appDatabase.class,"dataCollection")
-                            .allowMainThreadQueries()
-                            .build();
-                    db.appUsageDataRecordDao().insertAll(appUsageDataRecord);
+//                    appDatabase db;
+//                    db = Room.databaseBuilder(mContext,appDatabase.class,"dataCollection")
+//                            .allowMainThreadQueries()
+//                            .build();
+                    appUsageDataRecordDAO.insertAll(appUsageDataRecord);
 
-                    List<AppUsageDataRecord> appUsageDataRecords = db.appUsageDataRecordDao().getAll();
+                    List<AppUsageDataRecord> appUsageDataRecords = appUsageDataRecordDAO.getAll();
 
                     for (AppUsageDataRecord a : appUsageDataRecords) {
-                        Log.e(TAG, "Latest_Used_App "+a.getLatest_Used_App());
-                        Log.e(TAG, "Latest_Foreground_Activity "+a.getLatest_Foreground_Activity());
-                        Log.e(TAG, "getScreen_Status "+a.getScreen_Status());
+                        Log.d(TAG, "Latest_Used_App "+a.getLatest_Used_App());
+                        Log.d(TAG, "Latest_Foreground_Activity "+a.getLatest_Foreground_Activity());
+                        Log.d(TAG, "getScreen_Status "+a.getScreen_Status());
                     }
                 } catch (NullPointerException e) {
                     e.printStackTrace();

@@ -29,6 +29,7 @@ import labelingStudy.nctu.minuku.Utilities.CSVHelper;
 import labelingStudy.nctu.minuku.Utilities.ScheduleAndSampleManager;
 import labelingStudy.nctu.minuku.Utilities.Utils;
 import labelingStudy.nctu.minuku.config.Constants;
+import labelingStudy.nctu.minuku.dao.ActivityRecognitionDataRecordDAO;
 import labelingStudy.nctu.minuku.manager.MinukuStreamManager;
 import labelingStudy.nctu.minuku.model.DataRecord.ActivityRecognitionDataRecord;
 import labelingStudy.nctu.minuku.model.DataRecord.TransportationModeDataRecord;
@@ -70,6 +71,8 @@ public class ActivityRecognitionStreamGenerator extends AndroidStreamGenerator<A
 
     private Context mContext;
     private ActivityRecognitionStream mStream;
+    private ActivityRecognitionDataRecordDAO activityRecognitionDataRecordDAO;
+
 
     private ActivityRecognitionDataRecord activityRecognitionDataRecord;
 
@@ -96,6 +99,7 @@ public class ActivityRecognitionStreamGenerator extends AndroidStreamGenerator<A
         //this.mContext = mMainServiceContext;
         this.mContext = applicationContext;
         this.mStream = new ActivityRecognitionStream(Constants.LOCATION_QUEUE_SIZE);
+        activityRecognitionDataRecordDAO = appDatabase.getDatabase(applicationContext).activityRecognitionDataRecordDao();
 
         mLocalRecordPool = new ArrayList<ActivityRecognitionDataRecord>();
 
@@ -189,16 +193,16 @@ public class ActivityRecognitionStreamGenerator extends AndroidStreamGenerator<A
 
             mStream.add(activityRecognitionDataRecord);
             try {
-                appDatabase db;
-                db = Room.databaseBuilder(mContext,appDatabase.class,"dataCollection")
-                        .allowMainThreadQueries()
-                        .build();
-                db.activityRecognitionDataRecordDao().insertAll(activityRecognitionDataRecord);
-                List<ActivityRecognitionDataRecord> activityRecognitionDataRecords = db.activityRecognitionDataRecordDao().getAll();
+//                appDatabase db;
+//                db = Room.databaseBuilder(mContext,appDatabase.class,"dataCollection")
+//                        .allowMainThreadQueries()
+//                        .build();
+                activityRecognitionDataRecordDAO.insertAll(activityRecognitionDataRecord);
+                List<ActivityRecognitionDataRecord> activityRecognitionDataRecords = activityRecognitionDataRecordDAO.getAll();
                 for (ActivityRecognitionDataRecord a : activityRecognitionDataRecords) {
-                    labelingStudy.nctu.minuku.logger.Log.e(TAG, "Detectedtime"+String.valueOf(a.getDetectedtime()));
-                    labelingStudy.nctu.minuku.logger.Log.e(TAG, "ostProbableActivity"+a.getMostProbableActivity().toString());
-                    labelingStudy.nctu.minuku.logger.Log.e(TAG, "ProbableActivities"+String.valueOf(a.getProbableActivities()));
+                    labelingStudy.nctu.minuku.logger.Log.d(TAG, "Detectedtime"+String.valueOf(a.getDetectedtime()));
+                    labelingStudy.nctu.minuku.logger.Log.d(TAG, "ostProbableActivity"+a.getMostProbableActivity().toString());
+                    labelingStudy.nctu.minuku.logger.Log.d(TAG, "ProbableActivities"+String.valueOf(a.getProbableActivities()));
                 }
             } catch (NullPointerException e) {
                 e.printStackTrace();
@@ -219,12 +223,12 @@ public class ActivityRecognitionStreamGenerator extends AndroidStreamGenerator<A
 
             EventBus.getDefault().post(activityRecognitionDataRecord);
             try {
-                appDatabase db;
-                db = Room.databaseBuilder(mContext,appDatabase.class,"dataCollection")
-                        .allowMainThreadQueries()
-                        .build();
-                db.activityRecognitionDataRecordDao().insertAll(activityRecognitionDataRecord);
-                List<ActivityRecognitionDataRecord> activityRecognitionDataRecords = db.activityRecognitionDataRecordDao().getAll();
+//                appDatabase db;
+//                db = Room.databaseBuilder(mContext,appDatabase.class,"dataCollection")
+//                        .allowMainThreadQueries()
+//                        .build();
+                activityRecognitionDataRecordDAO.insertAll(activityRecognitionDataRecord);
+                List<ActivityRecognitionDataRecord> activityRecognitionDataRecords = activityRecognitionDataRecordDAO.getAll();
 //                for (ActivityRecognitionDataRecord a : activityRecognitionDataRecords) {
 //                    labelingStudy.nctu.minuku.logger.Log.e(TAG, "Detectedtime: "+String.valueOf(a.getDetectedtime()));
 //                    labelingStudy.nctu.minuku.logger.Log.e(TAG, "ostProbableActivity: "+a.getMostProbableActivity().toString());

@@ -8,12 +8,27 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 import android.util.Log;
 
+import com.android.volley.Cache;
+import com.android.volley.Network;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.BasicNetwork;
+import com.android.volley.toolbox.DiskBasedCache;
+import com.android.volley.toolbox.HurlStack;
+import com.android.volley.toolbox.StringRequest;
+
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import labelingStudy.nctu.minuku.Data.appDatabase;
 import labelingStudy.nctu.minuku.config.Constants;
+import labelingStudy.nctu.minuku.dao.NotificationDataRecordDAO;
 import labelingStudy.nctu.minuku.manager.MinukuStreamManager;
 import labelingStudy.nctu.minuku.model.DataRecord.NotificationDataRecord;
 import labelingStudy.nctu.minuku.service.NotificationListenService;
@@ -35,15 +50,28 @@ public class NotificationStreamGenerator extends AndroidStreamGenerator<Notifica
     String TAG = "NotificationStreamGenerator";
     String room = "room";
     private NotificationStream mStream;
+    private NotificationDataRecordDAO notificationDataRecordDAO;
+
     private static NotificationManager notificationManager;
+
+    public static int mNotificaitonId = 0;
     public static String mNotificaitonTitle = "";
     public static String mNotificaitonText = "";
     public static String mNotificaitonSubText = "";
     public static String mNotificationTickerText = "";
     public static  String mNotificaitonPackageName ="";
+
+    public static String preNotificaitonTitle = "";
+    public static String preNotificaitonText = "";
+
     private NotificationListenService notificationlistener;
     public static Integer accessid=-1;
     appDatabase db;
+
+    String url ="http://notiaboutness.nctu.me/notification/save";
+
+
+    RequestQueue mRequestQueue;
 
 
 
@@ -72,6 +100,7 @@ public class NotificationStreamGenerator extends AndroidStreamGenerator<Notifica
         mContext = applicationContext;
         notificationlistener = new NotificationListenService(this);
         this.mStream = new NotificationStream(Constants.DEFAULT_QUEUE_SIZE);
+        notificationDataRecordDAO = appDatabase.getDatabase(applicationContext).notificationDataRecordDao();
 
         //  notificationManager = (android.app.NotificationManager)mContext.getSystemService(mContext.NOTIFICATION_SERVICE);
 
@@ -82,6 +111,11 @@ public class NotificationStreamGenerator extends AndroidStreamGenerator<Notifica
         mNotificationTickerText = "Default";
         mNotificaitonPackageName ="Default";
         accessid = -1;
+
+        preNotificaitonTitle = mNotificaitonTitle;
+        preNotificaitonText = mNotificaitonText;
+
+
         this.register();
     }
 
@@ -104,6 +138,17 @@ public class NotificationStreamGenerator extends AndroidStreamGenerator<Notifica
         Log.d(TAG, " " + mNotificaitonTitle + mNotificaitonText + mNotificaitonSubText
                  + mNotificationTickerText + mNotificaitonPackageName + accessid);
 
+
+        if(preNotificaitonTitle.equals(mNotificaitonTitle) && preNotificaitonText.equals(mNotificaitonText))
+            Log.d(TAG, "Equal = preNotificaitonText: "  + preNotificaitonText + " mNotificaitonText: " + mNotificaitonText);
+        else {
+            Log.d(TAG, mNotificaitonId + "Not Equal preNotificaitonText: "  + preNotificaitonText + " mNotificaitonText: " + mNotificaitonText);
+            preNotificaitonTitle = mNotificaitonTitle;
+            preNotificaitonText = mNotificaitonText;
+            HttpDataHandler();
+            mNotificaitonId++;
+        }
+
         mStream.add(notificationDataRecord);
         Log.d(TAG, "Check notification to be sent to event bus " + notificationDataRecord);
         // also post an event.
@@ -111,17 +156,21 @@ public class NotificationStreamGenerator extends AndroidStreamGenerator<Notifica
 
         EventBus.getDefault().post(notificationDataRecord);
 
+
         try {
-            db = Room.databaseBuilder(mContext,appDatabase.class,"dataCollection")
-                    .allowMainThreadQueries()
-                    .build();
-            db.notificationDataRecordDao().insertAll(notificationDataRecord);
-            List<NotificationDataRecord> notificationDataRecords = db.notificationDataRecordDao().getAll();
-//            for (NotificationDataRecord l : notificationDataRecords) {
-//                Log.e(TAG, " NotificationPackageName: " + String.valueOf(l.getNotificaitonPackageName()));
-//                Log.e(TAG, " NotificationTitle: " + String.valueOf(l.getNotificaitonTitle()));
-//                Log.e(TAG, " NotificationText: " + String.valueOf(l.getNotificaitonText()));
-//            }
+//            db = Room.databaseBuilder(mContext,appDatabase.class,"dataCollection")
+//                    .allowMainThreadQueries()
+//                    .build();
+            notificationDataRecordDAO.insertAll(notificationDataRecord);
+            List<NotificationDataRecord> notificationDataRecords = notificationDataRecordDAO.getAll();
+            for (NotificationDataRecord l : notificationDataRecords) {
+                Log.d(TAG, " Notification_id: " + String.valueOf(l.get_id()));
+                Log.d(TAG, " NotificationPackageName: " + String.valueOf(l.getNotificaitonPackageName()));
+                Log.d(TAG, " NotificationTitle: " + String.valueOf(l.getNotificaitonTitle()));
+                Log.d(TAG, " NotificationText: " + String.valueOf(l.getNotificaitonText()));
+                Log.d(TAG, " NotificationAccessid: " + String.valueOf(l.getaccessid()));
+
+            }
 //            List<NotificationDataRecord> NotificationDataRecords = db.notificationDataRecordDao().getAll();
 //            for (NotificationDataRecord n : NotificationDataRecords) {
 //                Log.d(room,"Notification: "+n.getNotificaitonPackageName());
@@ -190,6 +239,70 @@ public class NotificationStreamGenerator extends AndroidStreamGenerator<Notifica
     }
     @Override
     public void offer(NotificationDataRecord dataRecord) {
+
+    }
+
+    public void HttpDataHandler(){
+        // Instantiate the cache
+        Cache cache = new DiskBasedCache(mContext.getCacheDir(), 1024 * 1024); // 1MB cap
+
+        // Set up the network to use HttpURLConnection as the HTTP client.
+        Network network = new BasicNetwork(new HurlStack());
+
+        // Instantiate the RequestQueue with the cache and network.
+        mRequestQueue = new RequestQueue(cache, network);
+
+        // Start the queue
+        mRequestQueue.start();
+
+
+        StringRequest myStringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                labelingStudy.nctu.minuku.logger.Log.e(TAG, "HttpDataHandler (onResponse): " + response);
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                labelingStudy.nctu.minuku.logger.Log.e(TAG, "HttpDataHandler (onErrorResponse): That didn't work " + error);
+                labelingStudy.nctu.minuku.logger.Log.e(TAG, "HttpDataHandler (onErrorResponse): That didn't work " + error.networkResponse.statusCode);
+                NetworkResponse networkResponse = error.networkResponse;
+                if (networkResponse != null && networkResponse.data != null) {
+                    String jsonError = new String(networkResponse.data);
+                    // Print Error!
+                    labelingStudy.nctu.minuku.logger.Log.e(TAG, "HttpDataHandler (onErrorResponse): That didn't work " + jsonError);
+
+                }
+
+
+            }
+        }){
+
+            protected Map<String, String> getParams() {
+                Map<String, String> MyData = new HashMap<String, String>();
+                //MyData.put("_id", "1"); //Add the data you'd like to send to the server.
+                MyData.put("userId", Constants.DEVICE_ID); //Constants.DEVICE_ID
+                MyData.put("notiId", String.valueOf(mNotificaitonId));
+                MyData.put("title", mNotificaitonTitle); //mNotificaitonTitle
+                MyData.put("packageName", mNotificaitonPackageName); //mNotificaitonPackageName
+                MyData.put("category", "test");
+                MyData.put("content", mNotificaitonText);//mNotificaitonText
+                //MyData.put("timestamp", "7");
+
+                labelingStudy.nctu.minuku.logger.Log.e(TAG, "HttpDataHandler (getParams): put Data Ready!");
+
+                return MyData;
+            }
+
+        };
+
+
+//        mRequestQueue = Volley.newRequestQueue(this);
+
+        mRequestQueue.add(myStringRequest);
+        labelingStudy.nctu.minuku.logger.Log.e(TAG, "HttpDataHandler: Insert success");
 
     }
 }

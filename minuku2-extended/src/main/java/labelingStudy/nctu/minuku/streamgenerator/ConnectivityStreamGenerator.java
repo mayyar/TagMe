@@ -15,6 +15,7 @@ import java.util.List;
 
 import labelingStudy.nctu.minuku.Data.appDatabase;
 import labelingStudy.nctu.minuku.config.Constants;
+import labelingStudy.nctu.minuku.dao.ConnectivityDataRecordDAO;
 import labelingStudy.nctu.minuku.logger.Log;
 import labelingStudy.nctu.minuku.manager.MinukuStreamManager;
 import labelingStudy.nctu.minuku.model.DataRecord.ConnectivityDataRecord;
@@ -54,6 +55,8 @@ public class ConnectivityStreamGenerator extends AndroidStreamGenerator<Connecti
     private static Handler mMainThread;
 
     private static ConnectivityManager mConnectivityManager;
+    private ConnectivityDataRecordDAO connectivityDataRecordDAO;
+
 
     private ConnectivityStream mStream;
 
@@ -64,6 +67,7 @@ public class ConnectivityStreamGenerator extends AndroidStreamGenerator<Connecti
 
         this.mContext = applicationContext;
         this.mStream = new ConnectivityStream(Constants.DEFAULT_QUEUE_SIZE);
+        connectivityDataRecordDAO = appDatabase.getDatabase(applicationContext).connectivityDataRecordDao();
 
         sharedPrefs = mContext.getSharedPreferences(Constants.sharedPrefString,Context.MODE_PRIVATE);
 
@@ -107,20 +111,20 @@ public class ConnectivityStreamGenerator extends AndroidStreamGenerator<Connecti
         // also post an event.
         EventBus.getDefault().post(connectivityDataRecord);
         try {
-            appDatabase db;
-            db = Room.databaseBuilder(mContext,appDatabase.class,"dataCollection")
-                    .allowMainThreadQueries()
-                    .build();
-            db.connectivityDataRecordDao().insertAll(connectivityDataRecord);
-            List<ConnectivityDataRecord> connectivityDataRecords = db.connectivityDataRecordDao().getAll();
+//            appDatabase db;
+//            db = Room.databaseBuilder(mContext,appDatabase.class,"dataCollection")
+//                    .allowMainThreadQueries()
+//                    .build();
+            connectivityDataRecordDAO.insertAll(connectivityDataRecord);
+            List<ConnectivityDataRecord> connectivityDataRecords = connectivityDataRecordDAO.getAll();
             for (ConnectivityDataRecord c : connectivityDataRecords) {
-                Log.e(TAG, " isIsWifiConnected: "+String.valueOf(c.isIsWifiConnected()));
-                Log.e(TAG," NetworkType: "+c.getNetworkType());
-                Log.e(TAG, " isNetworkAvailable: "+String.valueOf(c.isNetworkAvailable()));
-                Log.e(TAG, " isIsConnected: "+ String.valueOf(c.isIsConnected()));
-                Log.e(TAG, " isIsWifiAvailable: "+String.valueOf(isIsWifiAvailable()));
-                Log.e(TAG, " isIsMobileAvailable: "+String.valueOf(isIsMobileAvailable()));
-                Log.e(TAG, " isIsMobileConnected: "+ String.valueOf(isIsMobileConnected()));
+                Log.d(TAG, " isIsWifiConnected: "+String.valueOf(c.isIsWifiConnected()));
+                Log.d(TAG," NetworkType: "+c.getNetworkType());
+                Log.d(TAG, " isNetworkAvailable: "+String.valueOf(c.isNetworkAvailable()));
+                Log.d(TAG, " isIsConnected: "+ String.valueOf(c.isIsConnected()));
+                Log.d(TAG, " isIsWifiAvailable: "+String.valueOf(isIsWifiAvailable()));
+                Log.d(TAG, " isIsMobileAvailable: "+String.valueOf(isIsMobileAvailable()));
+                Log.d(TAG, " isIsMobileConnected: "+ String.valueOf(isIsMobileConnected()));
 
             }
         } catch (NullPointerException e){ //Sometimes no data is normal

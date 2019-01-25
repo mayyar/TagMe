@@ -17,6 +17,7 @@ import java.util.List;
 import labelingStudy.nctu.minuku.Data.appDatabase;
 import labelingStudy.nctu.minuku.Utilities.ScheduleAndSampleManager;
 import labelingStudy.nctu.minuku.config.Constants;
+import labelingStudy.nctu.minuku.dao.BatteryDataRecordDAO;
 import labelingStudy.nctu.minuku.manager.MinukuStreamManager;
 import labelingStudy.nctu.minuku.model.DataRecord.BatteryDataRecord;
 import labelingStudy.nctu.minuku.stream.BatteryStream;
@@ -38,6 +39,8 @@ public class BatteryStreamGenerator extends AndroidStreamGenerator<BatteryDataRe
     private static String mBatteryChargingState = "NA";
     public static boolean isCharging = false;
     private long detectedTime = Constants.INVALID_TIME_VALUE;
+    private BatteryDataRecordDAO batteryDataRecordDAO;
+
     private Context mContext;
 
     private SharedPreferences sharedPrefs;
@@ -47,6 +50,7 @@ public class BatteryStreamGenerator extends AndroidStreamGenerator<BatteryDataRe
 
         this.mContext = applicationContext;
         this.mStream = new BatteryStream(Constants.DEFAULT_QUEUE_SIZE);
+        batteryDataRecordDAO = appDatabase.getDatabase(applicationContext).batteryDataRecordDao();
 
         sharedPrefs = mContext.getSharedPreferences(Constants.sharedPrefString, Context.MODE_PRIVATE);
 
@@ -98,22 +102,22 @@ public class BatteryStreamGenerator extends AndroidStreamGenerator<BatteryDataRe
         // also post an event.
         EventBus.getDefault().post(batteryDataRecord);
         try {
-            appDatabase db;
-            db = Room.databaseBuilder(mContext,appDatabase.class,"dataCollection")
-                    .allowMainThreadQueries()
-                    .build();
-            db.batteryDataRecordDao().insertAll(batteryDataRecord);
+//            appDatabase db;
+//            db = Room.databaseBuilder(mContext,appDatabase.class,"dataCollection")
+//                    .allowMainThreadQueries()
+//                    .build();
+            batteryDataRecordDAO.insertAll(batteryDataRecord);
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 //            Date start =sdf.parse("2018/03/26 00:00:00");
 //            Date end =sdf.parse("2018/03/26 15:37:00");
 
-            List<BatteryDataRecord> batteryDataRecords = db.batteryDataRecordDao().getAll();
+            List<BatteryDataRecord> batteryDataRecords = batteryDataRecordDAO.getAll();
             for (BatteryDataRecord b : batteryDataRecords) {
-                Log.e(TAG, " BatteryChargingState "+b.getBatteryChargingState());
-                Log.e(TAG, " BatteryPercentage "+String.valueOf(b.getBatteryPercentage()));
-                Log.e(TAG, " BatteryLevel: "+String.valueOf(b.getBatteryLevel()));
-                Log.e(TAG, " isCharging: "+String.valueOf(b.isCharging()));
+                Log.d(TAG, " BatteryChargingState "+b.getBatteryChargingState());
+                Log.d(TAG, " BatteryPercentage "+String.valueOf(b.getBatteryPercentage()));
+                Log.d(TAG, " BatteryLevel: "+String.valueOf(b.getBatteryLevel()));
+                Log.d(TAG, " isCharging: "+String.valueOf(b.isCharging()));
             }
 //            mDAO.query_counting();
         } catch (NullPointerException e){ //Sometimes no data is normal

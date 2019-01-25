@@ -67,7 +67,7 @@ public class UserInteractionStreamGenerator extends AndroidStreamGenerator<UserI
     @Override
     public boolean updateStream() {
 
-        Log.e(TAG, "Update stream called.");
+        Log.d(TAG, "Update stream called.");
 
         return true;
     }

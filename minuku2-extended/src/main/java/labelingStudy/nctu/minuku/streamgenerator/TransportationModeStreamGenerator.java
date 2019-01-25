@@ -26,6 +26,7 @@ import labelingStudy.nctu.minuku.Utilities.CSVHelper;
 import labelingStudy.nctu.minuku.Utilities.ScheduleAndSampleManager;
 import labelingStudy.nctu.minuku.Utilities.Utils;
 import labelingStudy.nctu.minuku.config.Constants;
+import labelingStudy.nctu.minuku.dao.TransportationModeDataRecordDAO;
 import labelingStudy.nctu.minuku.manager.MinukuStreamManager;
 import labelingStudy.nctu.minuku.model.DataRecord.ActivityRecognitionDataRecord;
 import labelingStudy.nctu.minuku.model.DataRecord.TransportationModeDataRecord;
@@ -153,6 +154,8 @@ public class TransportationModeStreamGenerator extends AndroidStreamGenerator<Tr
 
     private static Context serviceInstance = null;
     private Context mContext;
+    private TransportationModeDataRecordDAO transportationModeDataRecordDAO;
+
 
     public static ScheduledExecutorService mScheduledExecutorService;
     public static final int TransportationMode_REFRESH_FREQUENCY = 5; //1s, 1000ms
@@ -165,6 +168,7 @@ public class TransportationModeStreamGenerator extends AndroidStreamGenerator<Tr
         super(applicationContext);
         this.mContext = applicationContext;
         this.mStream = new TransportationModeStream(Constants.LOCATION_QUEUE_SIZE);
+        transportationModeDataRecordDAO = appDatabase.getDatabase(applicationContext).transportationModeDataRecordDao();
 
         mScheduledExecutorService = Executors.newScheduledThreadPool(TransportationMode_ThreadSize);
 
@@ -256,20 +260,20 @@ public class TransportationModeStreamGenerator extends AndroidStreamGenerator<Tr
 
         try {
 
-            appDatabase db;
-            db = Room.databaseBuilder(mContext,appDatabase.class,"dataCollection")
-                    .allowMainThreadQueries()
-                    .build();
-            db.transportationModeDataRecordDao().insertAll(transportationModeDataRecord);
+//            appDatabase db;
+//            db = Room.databaseBuilder(mContext,appDatabase.class,"dataCollection")
+//                    .allowMainThreadQueries()
+//                    .build();
+            transportationModeDataRecordDAO.insertAll(transportationModeDataRecord);
 
-            List<TransportationModeDataRecord> transportationModeDataRecords = db.transportationModeDataRecordDao().getAll();
+            List<TransportationModeDataRecord> transportationModeDataRecords = transportationModeDataRecordDAO.getAll();
             for (TransportationModeDataRecord t : transportationModeDataRecords) {
-                labelingStudy.nctu.minuku.logger.Log.e(TAG," ConfirmedActivity: "+ t.getConfirmedActivityString());
-                labelingStudy.nctu.minuku.logger.Log.e(TAG, " SuspectedStartActivityString: "+t.getSuspectedStartActivityString());
-                labelingStudy.nctu.minuku.logger.Log.e(TAG, " SuspectedStopActivityString: "+t.getSuspectedStopActivityString());
-                labelingStudy.nctu.minuku.logger.Log.e(TAG, " SuspectedTime: "+String.valueOf(t.getSuspectedTime()));
-                labelingStudy.nctu.minuku.logger.Log.e(TAG, "taskDayCount: "+t.getTaskDayCount());
-                labelingStudy.nctu.minuku.logger.Log.e(TAG, "hour: "+t.getHour());
+                labelingStudy.nctu.minuku.logger.Log.d(TAG," ConfirmedActivity: "+ t.getConfirmedActivityString());
+                labelingStudy.nctu.minuku.logger.Log.d(TAG, " SuspectedStartActivityString: "+t.getSuspectedStartActivityString());
+                labelingStudy.nctu.minuku.logger.Log.d(TAG, " SuspectedStopActivityString: "+t.getSuspectedStopActivityString());
+                labelingStudy.nctu.minuku.logger.Log.d(TAG, " SuspectedTime: "+String.valueOf(t.getSuspectedTime()));
+                labelingStudy.nctu.minuku.logger.Log.d(TAG, "taskDayCount: "+t.getTaskDayCount());
+                labelingStudy.nctu.minuku.logger.Log.d(TAG, "hour: "+t.getHour());
 
             }
         } catch (NullPointerException e) { //Sometimes no data is normal

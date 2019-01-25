@@ -53,6 +53,7 @@ import java.util.TimerTask;
 
 import labelingStudy.nctu.minuku.Data.appDatabase;
 import labelingStudy.nctu.minuku.config.Constants;
+import labelingStudy.nctu.minuku.dao.LocationDataRecordDAO;
 import labelingStudy.nctu.minuku.event.IncrementLoadingProcessCountEvent;
 import labelingStudy.nctu.minuku.logger.Log;
 import labelingStudy.nctu.minuku.manager.MinukuStreamManager;
@@ -104,6 +105,7 @@ public class LocationStreamGenerator extends AndroidStreamGenerator<LocationData
 
     private Context context;
 
+    private LocationDataRecordDAO locationDataRecordDAO;
 
 
     public static boolean startIndoorOutdoor;
@@ -125,6 +127,7 @@ public class LocationStreamGenerator extends AndroidStreamGenerator<LocationData
         this.latestLongitude = new AtomicDouble();
 
         this.context = applicationContext;
+        locationDataRecordDAO = appDatabase.getDatabase(applicationContext).locationDataRecordDao();
 
         mLocationDataRecords = new ArrayList<LocationDataRecord>();
 
@@ -307,20 +310,20 @@ public class LocationStreamGenerator extends AndroidStreamGenerator<LocationData
         EventBus.getDefault().post(newlocationDataRecord);
         try {
 
-            appDatabase db;
-            db = Room.databaseBuilder(context,appDatabase.class,"dataCollection")
-                    .allowMainThreadQueries()
-                    .build();
-            db.locationDataRecordDao().insertAll(newlocationDataRecord);
-            List<LocationDataRecord> locationDataRecords = db.locationDataRecordDao().getAll();
+//            appDatabase db;
+//            db = Room.databaseBuilder(context,appDatabase.class,"dataCollection")
+//                    .allowMainThreadQueries()
+//                    .build();
+            locationDataRecordDAO.insertAll(newlocationDataRecord);
+            List<LocationDataRecord> locationDataRecords = locationDataRecordDAO.getAll();
             for (LocationDataRecord l : locationDataRecords) {
-                Log.e(TAG, " Latitude: "+String.valueOf(l.getLatitude()));
-                Log.e(TAG, " Longitude: "+String.valueOf(l.getLongitude()));
-                Log.e(TAG," Accuracy: "+ String.valueOf(l.getAccuracy()));
-                Log.e(TAG," Altitude: "+ String.valueOf(l.getAltitude()));
-                Log.e(TAG," Speed: "+ String.valueOf(l.getSpeed()));
-                Log.e(TAG," Bearing: "+ String.valueOf(l.getBearing()));
-                Log.e(TAG," Provider: "+l.getProvider());
+                Log.d(TAG, " Latitude: "+String.valueOf(l.getLatitude()));
+                Log.d(TAG, " Longitude: "+String.valueOf(l.getLongitude()));
+                Log.d(TAG," Accuracy: "+ String.valueOf(l.getAccuracy()));
+                Log.d(TAG," Altitude: "+ String.valueOf(l.getAltitude()));
+                Log.d(TAG," Speed: "+ String.valueOf(l.getSpeed()));
+                Log.d(TAG," Bearing: "+ String.valueOf(l.getBearing()));
+                Log.d(TAG," Provider: "+l.getProvider());
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
