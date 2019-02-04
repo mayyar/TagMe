@@ -73,6 +73,8 @@ public class NotificationStreamGenerator extends AndroidStreamGenerator<Notifica
 
     RequestQueue mRequestQueue;
 
+    Map<String, String> categoryDict = new HashMap<String, String>();
+
 
 
     public NotificationStreamGenerator(){
@@ -139,6 +141,7 @@ public class NotificationStreamGenerator extends AndroidStreamGenerator<Notifica
                  + mNotificationTickerText + mNotificaitonPackageName + accessid);
 
 
+
         if(preNotificaitonTitle.equals(mNotificaitonTitle) && preNotificaitonText.equals(mNotificaitonText))
             Log.d(TAG, "Equal = preNotificaitonText: "  + preNotificaitonText + " mNotificaitonText: " + mNotificaitonText);
         else {
@@ -181,7 +184,8 @@ public class NotificationStreamGenerator extends AndroidStreamGenerator<Notifica
             return false;
         }
 
-        MinukuStreamManager.getInstance().setNotificationDataRecord(notificationDataRecord, mContext);
+//TagMe
+//        MinukuStreamManager.getInstance().setNotificationDataRecord(notificationDataRecord, mContext);
 
 
         return false;
@@ -243,6 +247,28 @@ public class NotificationStreamGenerator extends AndroidStreamGenerator<Notifica
     }
 
     public void HttpDataHandler(){
+
+        categoryDict.put("com.facebook.orca","messenger");
+        categoryDict.put("com.google.android.gm","mail");
+//        categoryDict.put("com.facebook.orca","utility");
+//        categoryDict.put("","market");
+//        categoryDict.put("com.facebook.orca","game");
+//        categoryDict.put("com.facebook.orca","music");
+//        categoryDict.put("com.facebook.orca","other");
+//        categoryDict.put("com.facebook.orca","alarm clock");
+//        categoryDict.put("com.facebook.orca","reader/news");
+        categoryDict.put("jp.naver.line.android","social");
+        categoryDict.put("com.instagram.android","social");
+        categoryDict.put("com.facebook.katana","social");
+
+
+        categoryDict.put("com.android.systemui","system");
+        categoryDict.put("android","system");
+        categoryDict.put("com.android.vending","system");
+
+//        categoryDict.put("com.facebook.orca","calendar");
+
+
         // Instantiate the cache
         Cache cache = new DiskBasedCache(mContext.getCacheDir(), 1024 * 1024); // 1MB cap
 
@@ -287,7 +313,10 @@ public class NotificationStreamGenerator extends AndroidStreamGenerator<Notifica
                 MyData.put("notiId", String.valueOf(mNotificaitonId));
                 MyData.put("title", mNotificaitonTitle); //mNotificaitonTitle
                 MyData.put("packageName", mNotificaitonPackageName); //mNotificaitonPackageName
-                MyData.put("category", "test");
+                if(categoryDict.get(mNotificaitonPackageName) != null)
+                    MyData.put("category", categoryDict.get(mNotificaitonPackageName));
+                else
+                    MyData.put("category", "other");
                 MyData.put("content", mNotificaitonText);//mNotificaitonText
                 //MyData.put("timestamp", "7");
 
