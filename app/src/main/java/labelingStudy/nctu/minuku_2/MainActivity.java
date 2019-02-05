@@ -22,10 +22,14 @@
 
 package labelingStudy.nctu.minuku_2;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Application;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -62,10 +66,14 @@ import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.StringRequest;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import labelingStudy.nctu.minuku.config.Constants;
@@ -73,9 +81,11 @@ import labelingStudy.nctu.minuku.logger.Log;
 //import labelingStudy.nctu.minuku_2.controller.CounterActivity;
 import labelingStudy.nctu.minuku.model.DataRecord.NotificationDataRecord;
 import labelingStudy.nctu.minuku.service.NotificationListenService;
+import labelingStudy.nctu.minuku_2.Receiver.AlarmReceiver;
 import labelingStudy.nctu.minuku_2.model.MyAdapter;
 import labelingStudy.nctu.minuku_2.model.Post;
 import labelingStudy.nctu.minuku_2.service.BackgroundService;
+import labelingStudy.nctu.minuku_2.service.JobSchedulerService;
 
 import static labelingStudy.nctu.minuku.streamgenerator.NotificationStreamGenerator.mNotificaitonPackageName;
 import static labelingStudy.nctu.minuku.streamgenerator.NotificationStreamGenerator.mNotificaitonText;
@@ -113,10 +123,12 @@ public class MainActivity extends AppCompatActivity {
     MyAdapter myAdapter;
     public static ArrayList<Post> data;
 
-//    String url ="http://notiaboutness.nctu.me/notification/save";
-//
-//
-//    RequestQueue mRequestQueue;
+    //job id 用以區別任務
+    int JOB_ID = 0;
+
+    private AlarmManager alarmMgr;
+    private PendingIntent alarmIntent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -185,6 +197,38 @@ public class MainActivity extends AppCompatActivity {
 //            android.util.Log.e(TAG, "exception", e);
         }
 //###########################################################################
+
+        alarmMgr = (AlarmManager)MainActivity.this.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
+        alarmIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, 0);
+        long selectedTimeMiliseconds = (long) (TimeUnit.MINUTES.toMillis(5));
+
+// Set the alarm to start at 21:32 PM
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, 3);
+        calendar.set(Calendar.MINUTE, 5);
+
+// setRepeating() lets you specify a precise custom interval--in this case,
+// 1 day
+        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                selectedTimeMiliseconds, alarmIntent);
+
+//        創建一個JobScheduler對象
+//        JobInfo.Builder jobBuilder = new JobInfo.Builder(JOB_ID, new ComponentName(getPackageName(), JobSchedulerService.class.getName()));
+//        //設置任務延遲執行的時間，單位毫秒
+////        jobBuilder.setMinimumLatency(60 * 1000);
+//        jobBuilder.setPeriodic(AlarmManager.INTERVAL_FIFTEEN_MINUTES);
+//        //設置是否在設備重啟後，要繼續執行
+//        jobBuilder.setPersisted(true);
+//
+//        JobScheduler mJobScheduler = (JobScheduler)getSystemService(Context.JOB_SCHEDULER_SERVICE);
+//        mJobScheduler.schedule(jobBuilder.build());
+//
+//        if ((mJobScheduler.schedule(jobBuilder.build())) <= 0) {
+//            Log.i(TAG, " something goes wrong");
+//        }
+
         recyclerView = (RecyclerView) findViewById(R.id.rcv);
         data = new ArrayList<>();
         for(int i = 0; i < 10; i++){
