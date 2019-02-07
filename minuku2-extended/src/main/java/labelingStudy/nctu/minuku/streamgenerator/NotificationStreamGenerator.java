@@ -148,7 +148,7 @@ public class NotificationStreamGenerator extends AndroidStreamGenerator<Notifica
             Log.d(TAG, mNotificaitonId + "Not Equal preNotificaitonText: "  + preNotificaitonText + " mNotificaitonText: " + mNotificaitonText);
             preNotificaitonTitle = mNotificaitonTitle;
             preNotificaitonText = mNotificaitonText;
-//            HttpDataHandler();
+            HttpDataHandler();
             mNotificaitonId++;
         }
 

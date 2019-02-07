@@ -30,10 +30,12 @@ import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -65,12 +67,16 @@ import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.StringRequest;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -94,6 +100,7 @@ import static labelingStudy.nctu.minuku.streamgenerator.NotificationStreamGenera
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
+    public static boolean FirstTimeFlag = true;
 
     private String current_task;
 
@@ -112,7 +119,10 @@ public class MainActivity extends AppCompatActivity {
 
     private SharedPreferences sharedPrefs;
 
+
     private boolean firstTimeOrNot;
+    private boolean dataFirstTimeOrNot;
+
 
     private AlertDialog enableNotificationListenerAlertDialog;
 
@@ -122,12 +132,16 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     MyAdapter myAdapter;
     public static ArrayList<Post> data;
+    public static ArrayList<Post> arrayItems = new ArrayList<>();;
+
 
     //job id 用以區別任務
     int JOB_ID = 0;
 
     private AlarmManager alarmMgr;
     private PendingIntent alarmIntent;
+
+
 
 
     @Override
@@ -138,12 +152,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_tag_list);
 
 
-
         sharedPrefs = getSharedPreferences(Constants.sharedPrefString, MODE_PRIVATE);
 
 //        current_task = getResources().getString(R.string.current_task);
 
         sharedPrefs.edit().putString("currentWork", Constants.currentWork).apply();
+
+
 
 //        if(current_task.equals("PART")) {
 //            initViewPager(timerview, recordview);
@@ -157,18 +172,18 @@ public class MainActivity extends AppCompatActivity {
         mManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
         mBuilder = new NotificationCompat.Builder(this);
 
-        if(!isNotificationServiceEnabled()) {
+        if (!isNotificationServiceEnabled()) {
             android.util.Log.d(TAG, "notification start!!");
             enableNotificationListenerAlertDialog = buildNotificationServiceAlertDialog();
             enableNotificationListenerAlertDialog.show();
-        }else{
+        } else {
             toggleNotificationListenerService();
         }
 
         int sdk_int = Build.VERSION.SDK_INT;
-        if(sdk_int>=23) {
+        if (sdk_int >= 23) {
             checkAndRequestPermissions();
-        }else{
+        } else {
             startServiceWork();
 
         }
@@ -192,27 +207,27 @@ public class MainActivity extends AppCompatActivity {
                 TabLayout.Tab tab = mTabs.getTabAt(1);
                 tab.select();
             }
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
 //            e.printStackTrace();
 //            android.util.Log.e(TAG, "exception", e);
         }
 //###########################################################################
 
-        alarmMgr = (AlarmManager)MainActivity.this.getSystemService(Context.ALARM_SERVICE);
+        alarmMgr = (AlarmManager) MainActivity.this.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
         alarmIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, 0);
-        long selectedTimeMiliseconds = (long) (TimeUnit.MINUTES.toMillis(5));
+//        long selectedTimeMiliseconds = (long) (TimeUnit.MINUTES.toMillis(5));
 
 // Set the alarm to start at 21:32 PM
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, 3);
-        calendar.set(Calendar.MINUTE, 5);
+        calendar.set(Calendar.HOUR_OF_DAY, 22);
+        calendar.set(Calendar.MINUTE, 00);
 
 // setRepeating() lets you specify a precise custom interval--in this case,
 // 1 day
         alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                selectedTimeMiliseconds, alarmIntent);
+                1000 * 60 * 60 * 24, alarmIntent);
 
 //        創建一個JobScheduler對象
 //        JobInfo.Builder jobBuilder = new JobInfo.Builder(JOB_ID, new ComponentName(getPackageName(), JobSchedulerService.class.getName()));
@@ -230,89 +245,108 @@ public class MainActivity extends AppCompatActivity {
 //        }
 
         recyclerView = (RecyclerView) findViewById(R.id.rcv);
+
         data = new ArrayList<>();
-        for(int i = 0; i < 10; i++){
-            data.add(new Post("PackageName", "Title", "notification content", "00:00:00", false));
+
+
+        dataFirstTimeOrNot = sharedPrefs.getBoolean("dataFirstTimeOrNot", true);
+        Log.d(TAG,"dataFirstTimeOrNot : "+ firstTimeOrNot);
+
+        if(dataFirstTimeOrNot) {
+            // things that first time should be done
+            for (int i = 0; i < 10; i++) {
+                data.add(new Post("PackageName", "Title", "notification content", "00:00:00", false));
+            }
+
+            //Save data to preference
+            Gson gson = new Gson();
+            String json = gson.toJson(data);
+            sharedPrefs.edit().putString("noti", json).commit();
+
+            //Get data and turn String to ArrayList<Post>
+            String serializedObject = sharedPrefs.getString("noti", null);
+            Log.d(TAG, "Get SerializeObject: " + serializedObject);
+
+            if (serializedObject != null){
+                Gson gson1 = new Gson();
+                Type type = new TypeToken<ArrayList<Post>>(){}.getType();
+                arrayItems = gson1.fromJson(serializedObject, type);
+                Log.d(TAG, "SerializeObject: " + arrayItems);
+            }
+            setMyAdapter();
+
+
+            dataFirstTimeOrNot = false;
+            sharedPrefs.edit().putBoolean("dataFirstTimeOrNot", dataFirstTimeOrNot).commit();
+        }else{
+            String serializedObject = sharedPrefs.getString("updateNoti", null);
+            Log.d(TAG, "Get SerializeObject: " + serializedObject);
+
+            if (serializedObject != null){
+                Gson gson1 = new Gson();
+                Type type = new TypeToken<ArrayList<Post>>(){}.getType();
+                arrayItems = gson1.fromJson(serializedObject, type);
+                Log.d(TAG, "SerializeObject: " + arrayItems);
+            }
+
+
+            setMyAdapter();
+
         }
 
-        myAdapter = new MyAdapter(this, data);
+        registerReceiver(broadcastReceiver, new IntentFilter("broadCastName"));
+
+
+    }
+
+    public void setMyAdapter(){
+        myAdapter = new MyAdapter(this, arrayItems);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(RecyclerView.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(myAdapter);
-
-//        HttpDataHandler();
-
     }
+
+
+    BroadcastReceiver broadcastReceiver =  new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            Bundle b = intent.getExtras();
+
+            String message = b.getString("message");
+            Log.d(TAG, "(test Receive) Main OnReceive ");
+            Log.d(TAG, "(test Receive) GetDataAPIList: " + AlarmReceiver.GetAPIDataList());
+
+            recyclerView = (RecyclerView) findViewById(R.id.rcv);
+
+            data = new ArrayList<>();
+            for(int i = 0; i < AlarmReceiver.GetAPIDataList().size(); i++){
+                ArrayList<String> temp = (ArrayList<String>) AlarmReceiver.GetAPIDataList().get(i);
+                data.add(new Post(temp.get(1), temp.get(3), temp.get(4), temp.get(2), false));
+
+            }
+            myAdapter = new MyAdapter(MainActivity.this, data);
+            final LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+            layoutManager.setOrientation(RecyclerView.VERTICAL);
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setAdapter(myAdapter);
+        }
+    };
+
+    public void saveData(){
+        //Save data to preference
+        Gson gson = new Gson();
+        String json = gson.toJson(arrayItems);
+        sharedPrefs.edit().putString("updateNoti", json).commit();
+    }
+
 
 
     public static ArrayList<Post> getAdapterData(){
-        return data;
+        return arrayItems;
     }
 
-//    public void HttpDataHandler(){
-//        // Instantiate the cache
-//        Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024); // 1MB cap
-//
-//        // Set up the network to use HttpURLConnection as the HTTP client.
-//        Network network = new BasicNetwork(new HurlStack());
-//
-//        // Instantiate the RequestQueue with the cache and network.
-//        mRequestQueue = new RequestQueue(cache, network);
-//
-//        // Start the queue
-//        mRequestQueue.start();
-//
-//
-//        StringRequest myStringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-//            @Override
-//            public void onResponse(String response) {
-//                Log.e(TAG, "HttpDataHandler (onResponse): " + response);
-//
-//            }
-//        }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//
-//                Log.e(TAG, "HttpDataHandler (onErrorResponse): That didn't work " + error);
-//                Log.e(TAG, "HttpDataHandler (onErrorResponse): That didn't work " + error.networkResponse.statusCode);
-//                NetworkResponse networkResponse = error.networkResponse;
-//                if (networkResponse != null && networkResponse.data != null) {
-//                    String jsonError = new String(networkResponse.data);
-//                    // Print Error!
-//                    Log.e(TAG, "HttpDataHandler (onErrorResponse): That didn't work " + jsonError);
-//
-//                }
-//
-//
-//            }
-//        }){
-//
-//            protected Map<String, String> getParams() {
-//                Map<String, String> MyData = new HashMap<String, String>();
-//                //MyData.put("_id", "1"); //Add the data you'd like to send to the server.
-//                MyData.put("userId", Constants.DEVICE_ID); //Constants.DEVICE_ID
-//                MyData.put("notiId", "0");
-//                MyData.put("title", mNotificaitonTitle); //mNotificaitonTitle
-//                MyData.put("packageName", mNotificaitonPackageName); //mNotificaitonPackageName
-//                MyData.put("category", "test");
-//                MyData.put("content", mNotificaitonText);//mNotificaitonText
-//                //MyData.put("timestamp", "7");
-//
-//                Log.e(TAG, "HttpDataHandler (getParams): put Data Ready!");
-//
-//                return MyData;
-//            }
-//
-//        };
-//
-//
-////        mRequestQueue = Volley.newRequestQueue(this);
-//
-//        mRequestQueue.add(myStringRequest);
-//        Log.e(TAG, "HttpDataHandler: Insert success");
-//
-//    }
 
 
     private boolean isNotificationServiceEnabled(){
@@ -365,8 +399,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onResume(){
-        super.onResume();
         myAdapter.notifyDataSetChanged();
+
+        saveData();
+
+        super.onResume();
         Log.d(TAG,"onResume");
 
     }
@@ -537,8 +574,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+
+        super.onPause();
+    }
+
+    @Override
     protected void onStart() {
+        myAdapter.notifyDataSetChanged();
+
         super.onStart();
+
     }
 
 

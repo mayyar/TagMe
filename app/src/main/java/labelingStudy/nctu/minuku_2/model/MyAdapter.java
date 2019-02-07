@@ -67,10 +67,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             holder.btnCheck.setBackgroundColor(Color.RED);
             holder.btnCheck.setTextColor(Color.WHITE);
             holder.btnCheck.setEnabled(false);
-            selectedPosition = -1;
+//            selectedPosition = -1;
         }
         else {
             holder.btnCheck.setText("填寫問卷");
+            holder.btnCheck.setEnabled(true);
+
         }
 
 
@@ -114,7 +116,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                 mContext.startActivity(intent);
 
 //                notifyItemChanged(position);
-                notifyDataSetChanged();
+//                notifyDataSetChanged();
             }
 
         });

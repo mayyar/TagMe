@@ -99,6 +99,8 @@ public class Constants {
 
     //sharedPrefs
     public static final String sharedPrefString = "labelingStudy.nctu.minuku_2";
+    public static final String dataSharedPref = "notification-data";
+
 
     //file path
     public static final String PACKAGE_DIRECTORY_PATH = "/Android/data/labelingStudy.nctu.minuku_2/";

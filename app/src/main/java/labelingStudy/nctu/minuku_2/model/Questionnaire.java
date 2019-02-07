@@ -67,19 +67,20 @@ public class Questionnaire extends AppCompatActivity {
             Bundle extras = getIntent().getExtras();
             if(extras !=null)
             {
-                selectedPosition = extras.getInt("PersonID");
+                int pos = extras.getInt("PersonID");
 
-                Post post = MainActivity.getAdapterData().get(selectedPosition);
+                Post post = MainActivity.getAdapterData().get(pos);
                 post.check = true;
 
+                Log.d(TAG, "pos: " + pos);
 
             }
 //            notifyDatasetChanged();
 //            Intent openMainActivity= new Intent(Questionnaire.this, MainActivity.class);
 //            openMainActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 //            startActivityIfNeeded(openMainActivity, 0);
+//                notifyDataSetChanged();
             finish();
-            Questionnaire.super.onResume();
 
         }
     };
