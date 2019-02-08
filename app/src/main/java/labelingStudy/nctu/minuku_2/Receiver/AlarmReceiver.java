@@ -80,7 +80,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                     public void onResponse(String response) {
                         labelingStudy.nctu.minuku.logger.Log.d(TAG, "HttpDataHandler (onResponse): " + response);
                         try {
-
+                            GetDataList = new ArrayList<>();
                             JSONArray obj = new JSONArray(response);
                             for(int i = 0; i < obj.length(); i++ ){
                                 String noti_id = obj.getJSONObject(i).getString("noti_id");

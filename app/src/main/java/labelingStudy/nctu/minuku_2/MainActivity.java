@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     MyAdapter myAdapter;
     public static ArrayList<Post> data;
-    public static ArrayList<Post> arrayItems = new ArrayList<>();;
+    public static ArrayList<Post> arrayItems = new ArrayList<>();
 
 
     //job id 用以區別任務
@@ -250,32 +250,32 @@ public class MainActivity extends AppCompatActivity {
 
 
         dataFirstTimeOrNot = sharedPrefs.getBoolean("dataFirstTimeOrNot", true);
-        Log.d(TAG,"dataFirstTimeOrNot : "+ firstTimeOrNot);
+        Log.d(TAG,"dataFirstTimeOrNot : "+ dataFirstTimeOrNot);
 
         if(dataFirstTimeOrNot) {
             // things that first time should be done
-            for (int i = 0; i < 10; i++) {
-                data.add(new Post("PackageName", "Title", "notification content", "00:00:00", false));
-            }
-
-            //Save data to preference
-            Gson gson = new Gson();
-            String json = gson.toJson(data);
-            sharedPrefs.edit().putString("noti", json).commit();
-
-            //Get data and turn String to ArrayList<Post>
-            String serializedObject = sharedPrefs.getString("noti", null);
-            Log.d(TAG, "Get SerializeObject: " + serializedObject);
-
-            if (serializedObject != null){
-                Gson gson1 = new Gson();
-                Type type = new TypeToken<ArrayList<Post>>(){}.getType();
-                arrayItems = gson1.fromJson(serializedObject, type);
-                Log.d(TAG, "SerializeObject: " + arrayItems);
-            }
+//            for (int i = 0; i < 10; i++) {
+//                data.add(new Post("PackageName", "Title", "notification content", "00:00:00", false));
+//            }
+//
+//            //Save data to preference
+//            Gson gson = new Gson();
+//            String json = gson.toJson(data);
+//            sharedPrefs.edit().putString("noti", json).commit();
+//
+//            //Get data and turn String to ArrayList<Post>
+//            String serializedObject = sharedPrefs.getString("noti", null);
+//            Log.d(TAG, "Get SerializeObject: " + serializedObject);
+//
+//            if (serializedObject != null){
+//                Gson gson1 = new Gson();
+//                Type type = new TypeToken<ArrayList<Post>>(){}.getType();
+//                arrayItems = gson1.fromJson(serializedObject, type);
+//                Log.d(TAG, "SerializeObject: " + arrayItems);
+//            }
             setMyAdapter();
-
-
+//
+//
             dataFirstTimeOrNot = false;
             sharedPrefs.edit().putBoolean("dataFirstTimeOrNot", dataFirstTimeOrNot).commit();
         }else{
@@ -319,18 +319,27 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "(test Receive) GetDataAPIList: " + AlarmReceiver.GetAPIDataList());
 
             recyclerView = (RecyclerView) findViewById(R.id.rcv);
-
             data = new ArrayList<>();
             for(int i = 0; i < AlarmReceiver.GetAPIDataList().size(); i++){
                 ArrayList<String> temp = (ArrayList<String>) AlarmReceiver.GetAPIDataList().get(i);
                 data.add(new Post(temp.get(1), temp.get(3), temp.get(4), temp.get(2), false));
 
             }
-            myAdapter = new MyAdapter(MainActivity.this, data);
-            final LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
-            layoutManager.setOrientation(RecyclerView.VERTICAL);
-            recyclerView.setLayoutManager(layoutManager);
-            recyclerView.setAdapter(myAdapter);
+            //Save data to preference
+            Gson gson = new Gson();
+            String json = gson.toJson(data);
+            sharedPrefs.edit().putString("updateNoti", json).apply();
+            //Get data and turn String to ArrayList<Post>
+            String serializedObject = sharedPrefs.getString("updateNoti", null);
+            Log.d(TAG, "Get SerializeObject: " + serializedObject);
+            arrayItems = new ArrayList<>();
+            if (serializedObject != null){
+                Gson gson1 = new Gson();
+                Type type = new TypeToken<ArrayList<Post>>(){}.getType();
+                arrayItems = gson1.fromJson(serializedObject, type);
+                Log.d(TAG, "SerializeObject: " + arrayItems);
+            }
+            setMyAdapter();
         }
     };
 
@@ -338,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
         //Save data to preference
         Gson gson = new Gson();
         String json = gson.toJson(arrayItems);
-        sharedPrefs.edit().putString("updateNoti", json).commit();
+        sharedPrefs.edit().putString("updateNoti", json).apply();
     }
 
 

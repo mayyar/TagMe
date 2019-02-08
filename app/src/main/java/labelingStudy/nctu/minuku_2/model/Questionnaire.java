@@ -47,7 +47,18 @@ public class Questionnaire extends AppCompatActivity {
         add = (Button)findViewById(R.id.btn_add);
         chipGroup = (ChipGroup)findViewById(R.id.chip_group);
 //        tag = (TextView)findViewById(R.id.tv_tag);
+        Bundle extra = getIntent().getExtras();
+        if(extra !=null)
+        {
+            int pos = extra.getInt("PersonID");
 
+            Post post = MainActivity.getAdapterData().get(pos);
+//            post.check = true;
+            notificationText.setText(post.content.toString());
+
+            Log.d(TAG, "pos: " + pos);
+
+        }
 
         add.setOnClickListener(addClick);
 
