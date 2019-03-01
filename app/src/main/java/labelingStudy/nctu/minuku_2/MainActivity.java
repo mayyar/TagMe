@@ -97,6 +97,9 @@ import static labelingStudy.nctu.minuku.streamgenerator.NotificationStreamGenera
 import static labelingStudy.nctu.minuku.streamgenerator.NotificationStreamGenerator.mNotificaitonText;
 import static labelingStudy.nctu.minuku.streamgenerator.NotificationStreamGenerator.mNotificaitonTitle;
 
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
@@ -147,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         Log.d(TAG, "Creating Main activity");
 
         setContentView(R.layout.activity_tag_list);
@@ -298,6 +302,10 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+//    public void forceCrash(View view) {
+//        throw new RuntimeException("This is a crash");
+//    }
+
 
     public void setMyAdapter(){
         myAdapter = new MyAdapter(this, arrayItems);
