@@ -22,9 +22,13 @@ import com.android.volley.toolbox.StringRequest;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import labelingStudy.nctu.minuku.Data.appDatabase;
 import labelingStudy.nctu.minuku.config.Constants;
@@ -60,6 +64,9 @@ public class NotificationStreamGenerator extends AndroidStreamGenerator<Notifica
     public static String mNotificaitonSubText = "";
     public static String mNotificationTickerText = "";
     public static  String mNotificaitonPackageName ="";
+    public static String mTimeStamp = "";
+    public static String mLocalTime = "";
+
 
     public static String preNotificaitonTitle = "";
     public static String preNotificaitonText = "";
@@ -132,6 +139,17 @@ public class NotificationStreamGenerator extends AndroidStreamGenerator<Notifica
     public boolean updateStream() {
 
         Log.d(TAG, "update stream called");
+
+        TimeZone tz  = TimeZone.getDefault() ;
+
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        Calendar c2 = Calendar.getInstance();
+        mTimeStamp = c2.getTime().toString();
+
+
+        TimeZone.setDefault(tz);
+        Calendar c = Calendar.getInstance();
+        mLocalTime = c.getTime().toString();
 
         NotificationDataRecord notificationDataRecord =
                 new NotificationDataRecord(mNotificaitonTitle, mNotificaitonText, mNotificaitonSubText
@@ -310,7 +328,6 @@ public class NotificationStreamGenerator extends AndroidStreamGenerator<Notifica
                 Map<String, String> MyData = new HashMap<String, String>();
                 //MyData.put("_id", "1"); //Add the data you'd like to send to the server.
                 MyData.put("userId", Constants.DEVICE_ID); //Constants.DEVICE_ID
-                MyData.put("notiId", String.valueOf(mNotificaitonId));
                 MyData.put("title", mNotificaitonTitle); //mNotificaitonTitle
                 MyData.put("packageName", mNotificaitonPackageName); //mNotificaitonPackageName
                 if(categoryDict.get(mNotificaitonPackageName) != null)
@@ -318,7 +335,9 @@ public class NotificationStreamGenerator extends AndroidStreamGenerator<Notifica
                 else
                     MyData.put("category", "other");
                 MyData.put("content", mNotificaitonText);//mNotificaitonText
-                //MyData.put("timestamp", "7");
+                MyData.put("timestamp", mTimeStamp);
+                MyData.put("localtime", mLocalTime);
+
 
                 labelingStudy.nctu.minuku.logger.Log.e(TAG, "HttpDataHandler (getParams): put Data Ready!");
 

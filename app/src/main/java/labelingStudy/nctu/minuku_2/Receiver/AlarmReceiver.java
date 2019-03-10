@@ -22,6 +22,7 @@ import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,16 +79,16 @@ public class AlarmReceiver extends BroadcastReceiver {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        labelingStudy.nctu.minuku.logger.Log.d(TAG, "HttpDataHandler (onResponse): " + response);
+                        labelingStudy.nctu.minuku.logger.Log.d(TAG, "(test Receive) HttpDataHandler (onResponse): " + response);
                         try {
-                            GetDataList = new ArrayList<>();
-                            JSONArray obj = new JSONArray(response);
-                            for(int i = 0; i < obj.length(); i++ ){
-                                String noti_id = obj.getJSONObject(i).getString("noti_id");
-                                String content = obj.getJSONObject(i).getString("content");
-                                String timestamp = obj.getJSONObject(i).getString("timestamp");
-                                String title = obj.getJSONObject(i).getString("title");
-                                String package_name = obj.getJSONObject(i).getString("package_name");
+//                            GetDataList = new ArrayList<>();
+                            JSONObject obj = new JSONObject(response);
+
+                                String noti_id = obj.getString("_id");
+                                String content = obj.getString("content");
+                                String timestamp = obj.getString("localtime");
+                                String title = obj.getString("title");
+                                String package_name = obj.getString("package_name");
 
                                 ArrayList<String> item = new ArrayList<>();
                                 item.add(noti_id);
@@ -98,13 +99,13 @@ public class AlarmReceiver extends BroadcastReceiver {
 
                                 GetDataList.add(item);
 
-                            }
+
 
 //                                Log.d(TAG, "item 0: " + GetDataList.get(0));
 
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Log.e(TAG, "Could not parse malformed JSON: \"" + response + "\"");
+                            Log.e(TAG, "(test Receive) Could not parse malformed JSON: \"" + response + "\"");
 
                         }
 
