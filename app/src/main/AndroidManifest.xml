@@ -102,6 +102,8 @@
              </intent-filter>
          </activity>
 
+
+
         <!-- Activities included from third party libraries -->
         <activity android:name="com.desmond.squarecamera.CameraActivity" />
 

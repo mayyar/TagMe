@@ -269,11 +269,11 @@ public class MinukuStreamManager implements StreamManager {
         }
         Log.d(TAG, "[test triggering] is Default ? : "+!notificationDataRecord.getNotificaitonPackageName().equals(NotificationStreamGenerator.NOTIFICATION_NAME_NA));
 
-        if (notificationDataRecord.getNotificaitonPackageName().equals("com.facebook.orca") && notificationDataRecord.getNotificaitonText().length() > 5) {
+//        if (notificationDataRecord.getNotificaitonPackageName().equals("com.facebook.orca") && notificationDataRecord.getNotificaitonText().length() > 5) {
             sendTagNotification(context);
             Log.d(TAG, "[test triggering] Long enough Facebook message is coming");
 
-        }
+//        }
     }
 
 
@@ -697,11 +697,11 @@ public class MinukuStreamManager implements StreamManager {
     }
 
     //TagMe
-    private void sendTagNotification(Context context) {
+    public void sendTagNotification(Context context) {
         NotificationManager mNotificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        String notificationText = "Please click to fill the questionnaire";
+        String notificationText = "New Record Arrived!!";
 
         Notification notification = getNotification(notificationText, context);
         mNotificationManager.notify(MinukuNotificationManager.reminderNotificationID, notification);
@@ -724,11 +724,12 @@ public class MinukuStreamManager implements StreamManager {
     private Notification getNotification(String text, Context context){
 
         Notification.BigTextStyle bigTextStyle = new Notification.BigTextStyle();
-        bigTextStyle.setBigContentTitle("LS");
+        bigTextStyle.setBigContentTitle("Noti Aboutness");
         bigTextStyle.bigText(text);
 
         //launch the Timeline Page, check the action in the app's AndroidManifest.xml
-        Intent resultIntent = new Intent("app.intent.action.Launch"); //MinukuNotificationManager.toTimeline;
+//        Intent resultIntent = new Intent("app.intent.action.Launch"); //MinukuNotificationManager.toTimeline;
+        Intent resultIntent = new Intent("app.intent.action.Launch");
         PendingIntent pending = PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Notification.Builder noti = new Notification.Builder(context)

@@ -42,7 +42,7 @@
     <color name ="reject_button">#f19898</color>
     <color name ="customize_button">#EAF2E3</color>
     <color name ="accept_button">#8EDAAD</color>
-    <color name="accent_lightest">#dcdbdb</color>
+    <color name="accent_lightest">#DCDBDB</color>
     <color name="common_plus_signin_btn_text_dark_pressed">#000000</color>
     <color name="custom">#eaeef7</color>
     <color name="stroke">#EF767A</color>

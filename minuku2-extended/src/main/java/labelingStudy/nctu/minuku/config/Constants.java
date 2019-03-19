@@ -140,7 +140,7 @@ public class Constants {
     public static final int LOCATION_QUEUE_SIZE = 50;
 
     public static final String APP_NAME = "LS";
-    public static final String APP_FULL_NAME = "Labeling Study";
+    public static final String APP_FULL_NAME = "Noti Aboutness";
     public static final String RUNNING_APP_DECLARATION = "正在執行 "+ APP_FULL_NAME;
     public static final long INTERNAL_LOCATION_UPDATE_FREQUENCY = 1 * 10 * 1000; // 1 * 300 * 1000
     public static final long INTERNAL_LOCATION_LOW_UPDATE_FREQUENCY = 1 * 60 * 1000; // 1 * 300 * 1000

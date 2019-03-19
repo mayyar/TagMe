@@ -1,6 +1,10 @@
 package labelingStudy.nctu.minuku_2.Receiver;
 
+import android.app.AlarmManager;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,110 +35,47 @@ import java.util.Map;
 import labelingStudy.nctu.minuku.config.Constants;
 import labelingStudy.nctu.minuku.logger.Log;
 import labelingStudy.nctu.minuku_2.MainActivity;
+import labelingStudy.nctu.minuku_2.service.JobSchedulerService;
 
 public class AlarmReceiver extends BroadcastReceiver {
 
     private Context mContext;
-    String url ="http://notiaboutness.nctu.me/notification/sample?userId=" + Constants.DEVICE_ID;
+    //job id 用以區別任務
+    int JOB_ID = 0;
 
-
-    RequestQueue mRequestQueue;
     private static final String TAG = "AlarmReceiver";
 
-    public static ArrayList<ArrayList> GetDataList = new ArrayList<>();
 
     @Override
     public void onReceive(Context context, Intent intent) {
         mContext = context;
         Log.d(TAG, "(test Receive) onReceive");
-        HttpGetDataHandler();
+//        HttpGetDataHandler();
 
         Bundle extras = intent.getExtras();
         Intent i = new Intent("broadCastName");
         // Data you need to pass to activity
         i.putExtra("message", "1234");
 
-        context.sendBroadcast(i);
+//        context.sendBroadcast(i);
 
+//        創建一個JobScheduler對象
+        JobInfo.Builder jobBuilder = new JobInfo.Builder(JOB_ID, new ComponentName(mContext.getPackageName(), JobSchedulerService.class.getName()));
+        //設置任務延遲執行的時間，單位毫秒
+//        jobBuilder.setMinimumLatency(60 * 1000);
+        jobBuilder.setPeriodic(AlarmManager.INTERVAL_FIFTEEN_MINUTES);
+//        jobBuilder.setPeriodic(15 * 60 * 1000);
+        //設置是否在設備重啟後，要繼續執行
+        jobBuilder.setPersisted(true);
+
+        JobScheduler mJobScheduler = (JobScheduler)mContext.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+        mJobScheduler.schedule(jobBuilder.build());
+
+        if ((mJobScheduler.schedule(jobBuilder.build())) <= 0) {
+            Log.i(TAG, " something goes wrong");
+        }
     }
 
-    public void HttpGetDataHandler(){
 
-
-
-        // Instantiate the cache
-        Cache cache = new DiskBasedCache(mContext.getCacheDir(), 1024 * 1024); // 1MB cap
-
-        // Set up the network to use HttpURLConnection as the HTTP client.
-        Network network = new BasicNetwork(new HurlStack());
-
-        // Instantiate the RequestQueue with the cache and network.
-        mRequestQueue = new RequestQueue(cache, network);
-
-        // Start the queue
-        mRequestQueue.start();
-
-
-        StringRequest getRequest = new StringRequest(url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        labelingStudy.nctu.minuku.logger.Log.d(TAG, "(test Receive) HttpDataHandler (onResponse): " + response);
-                        try {
-//                            GetDataList = new ArrayList<>();
-                            JSONObject obj = new JSONObject(response);
-
-                                String noti_id = obj.getString("_id");
-                                String content = obj.getString("content");
-                                String timestamp = obj.getString("localtime");
-                                String title = obj.getString("title");
-                                String package_name = obj.getString("package_name");
-
-                                ArrayList<String> item = new ArrayList<>();
-                                item.add(noti_id);
-                                item.add(package_name);
-                                item.add(timestamp);
-                                item.add(title);
-                                item.add(content);
-
-                                GetDataList.add(item);
-
-
-
-//                                Log.d(TAG, "item 0: " + GetDataList.get(0));
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Log.e(TAG, "(test Receive) Could not parse malformed JSON: \"" + response + "\"");
-
-                        }
-
-                    }
-                },
-                new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        labelingStudy.nctu.minuku.logger.Log.e(TAG, "HttpDataHandler (onErrorResponse): That didn't work " + error);
-                        labelingStudy.nctu.minuku.logger.Log.e(TAG, "HttpDataHandler (onErrorResponse): That didn't work " + error.networkResponse.statusCode);
-                        NetworkResponse networkResponse = error.networkResponse;
-                        if (networkResponse != null && networkResponse.data != null) {
-                            String jsonError = new String(networkResponse.data);
-                            // Print Error!
-                            labelingStudy.nctu.minuku.logger.Log.e(TAG, "HttpDataHandler (onErrorResponse): That didn't work " + jsonError);
-
-                        }
-                    }
-                });
-        mRequestQueue.add(getRequest);
-
-
-
-//
-
-    }
-
-    public static ArrayList GetAPIDataList(){
-        return GetDataList;
-    }
 }

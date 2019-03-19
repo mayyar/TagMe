@@ -94,6 +94,7 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/bundle_manifest" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/check_manifest_result" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/compatible_screen_manifest" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-runtime-classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-verifier" />
@@ -253,6 +254,9 @@
     <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-gass:9.2.1@aar" level="project" />
     <orderEntry type="library" name="Gradle: androidx.collection:collection:1.0.0@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.github.boxme:squarecamera:1.1.0@aar" level="project" />
+    <orderEntry type="module" module-name="minukucore" />
+    <orderEntry type="module" module-name="minuku2-extended" />
+    <orderEntry type="module" module-name="opencsv-3.10" />
     <orderEntry type="module" module-name="minukucore" />
     <orderEntry type="module" module-name="minuku2-extended" />
     <orderEntry type="module" module-name="opencsv-3.10" />

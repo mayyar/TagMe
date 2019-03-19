@@ -90,6 +90,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import labelingStudy.nctu.minuku.config.Constants;
 import labelingStudy.nctu.minuku.logger.Log;
 //import labelingStudy.nctu.minuku_2.controller.CounterActivity;
+import labelingStudy.nctu.minuku.manager.MinukuStreamManager;
 import labelingStudy.nctu.minuku.model.DataRecord.NotificationDataRecord;
 import labelingStudy.nctu.minuku.service.NotificationListenService;
 import labelingStudy.nctu.minuku_2.Receiver.AlarmReceiver;
@@ -229,30 +230,14 @@ public class MainActivity extends AppCompatActivity {
 
 // Set the alarm to start at 21:32 PM
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, 22);
-        calendar.set(Calendar.MINUTE, 32);
+//        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, 10);
+        calendar.set(Calendar.MINUTE, 00);
 
 // setRepeating() lets you specify a precise custom interval--in this case,
 // 1 day
         alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                1000 * 60 * 2, alarmIntent);
-
-//        創建一個JobScheduler對象
-//        JobInfo.Builder jobBuilder = new JobInfo.Builder(JOB_ID, new ComponentName(getPackageName(), JobSchedulerService.class.getName()));
-//        //設置任務延遲執行的時間，單位毫秒
-////        jobBuilder.setMinimumLatency(60 * 1000);
-//        jobBuilder.setPeriodic(AlarmManager.INTERVAL_FIFTEEN_MINUTES);
-//        //設置是否在設備重啟後，要繼續執行
-//        jobBuilder.setPersisted(true);
-//
-//        JobScheduler mJobScheduler = (JobScheduler)getSystemService(Context.JOB_SCHEDULER_SERVICE);
-//        mJobScheduler.schedule(jobBuilder.build());
-//
-//        if ((mJobScheduler.schedule(jobBuilder.build())) <= 0) {
-//            Log.i(TAG, " something goes wrong");
-//        }
-
+                AlarmManager.INTERVAL_DAY, alarmIntent);
 
 
 
@@ -285,6 +270,8 @@ public class MainActivity extends AppCompatActivity {
 //                arrayItems = gson1.fromJson(serializedObject, type);
 //                Log.d(TAG, "SerializeObject: " + arrayItems);
 //            }
+
+
             setMyAdapter();
 //
 //
@@ -306,7 +293,8 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        registerReceiver(broadcastReceiver, new IntentFilter("broadCastName"));
+//        registerReceiver(new AlarmReceiver(), new IntentFilter("broadCastName"));
+//        showData();
 
 
     }
@@ -324,20 +312,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    BroadcastReceiver broadcastReceiver =  new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
 
-            Bundle b = intent.getExtras();
+    public  void showData(){
+//            Bundle b = intent.getExtras();
 
-            String message = b.getString("message");
+//            String message = b.getString("message");
             Log.d(TAG, "(test Receive) Main OnReceive ");
-            Log.d(TAG, "(test Receive) GetDataAPIList: " + AlarmReceiver.GetAPIDataList());
+            Log.d(TAG, "(test Receive) GetDataAPIList: " + JobSchedulerService.GetAPIDataList());
 
             recyclerView = (RecyclerView) findViewById(R.id.rcv);
             data = new ArrayList<>();
-            for(int i = 0; i < AlarmReceiver.GetAPIDataList().size(); i++){
-                ArrayList<String> temp = (ArrayList<String>) AlarmReceiver.GetAPIDataList().get(i);
+            for(int i = 0; i < JobSchedulerService.GetAPIDataList().size(); i++){
+                ArrayList<String> temp = (ArrayList<String>) JobSchedulerService.GetAPIDataList().get(i);
                 data.add(new Post(temp.get(1), temp.get(3), temp.get(4), temp.get(2), false));
 
             }
@@ -356,8 +342,12 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "SerializeObject: " + arrayItems);
             }
             setMyAdapter();
-        }
-    };
+
+//            if (JobSchedulerService.GetAPIDataList().size() > 0){
+//                MinukuStreamManager.getInstance().sendTagNotification(this);
+//            }
+
+    }
 
     public void saveData(){
         //Save data to preference
@@ -424,11 +414,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onResume(){
-        myAdapter.notifyDataSetChanged();
-
-        saveData();
-
         super.onResume();
+        myAdapter.notifyDataSetChanged();
+        saveData();
+        showData();
         Log.d(TAG,"onResume");
 
     }
