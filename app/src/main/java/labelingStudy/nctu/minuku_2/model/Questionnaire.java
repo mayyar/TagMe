@@ -3,8 +3,12 @@ package labelingStudy.nctu.minuku_2.model;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.preference.DialogPreference;
 import android.text.TextUtils;
@@ -12,8 +16,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Cache;
 import com.android.volley.Network;
 import com.android.volley.NetworkResponse;
@@ -21,13 +27,23 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,14 +73,16 @@ public class Questionnaire extends AppCompatActivity {
     private static String mNotiId = "";
     private static String mSummary = "";
     private static String mTags = "";
-    private static String mtimestamp = "";
+    private static String mTimeStamp = "";
     private static String mLocalTime = "";
 
     private static ArrayList<String> TagList = new ArrayList<>();
+    private  ArrayList<Integer> AddPosition = new ArrayList<>();
 
     String url ="http://notiaboutness.nctu.me/form/submit";
 
 
+    JSONObject jsonObject;
     RequestQueue mRequestQueue;
 
 
@@ -123,7 +141,48 @@ public class Questionnaire extends AppCompatActivity {
 //                                arrayItems.remove(pos);
 
                                 mNotiId = GetDataList.get(pos).get(0).toString();
-                                Log.d(TAG, "pos: " + pos);
+                                ArrayList<String> temp = new ArrayList<>();
+                                for(int l = 0 ; l < AddPosition.size(); l++){
+                                    temp.add(TagList.get(AddPosition.get(l)));
+                                }
+                                for(int j = 0 ; j < temp.size(); j++){
+                                    TagList.remove(temp.get(j));
+                                    Log.d(TAG, "HttpDataHandler2 AddPosition: " +  AddPosition);
+                                }
+
+//                                mTags = TagList.toString();
+                                mSummary = editSummary.getText().toString();
+                                mTimeStamp = GetDataList.get(pos).get(5).toString();
+                                mLocalTime = GetDataList.get(pos).get(2).toString();
+
+                                try {
+                                    jsonObject = new JSONObject();
+
+                                    jsonObject.put("notiId", mNotiId);
+                                    jsonObject.put("userId", Constants.DEVICE_ID);
+                                    jsonObject.put("summary", mSummary);
+                                    JSONArray arr = new JSONArray();
+                                    for(int k = 0; k < TagList.size(); k++){
+                                        arr.put(TagList.get(k));
+
+                                    }
+                                    jsonObject.put("tags", arr);
+                                    jsonObject.put("timestamp", mTimeStamp);
+                                    jsonObject.put("localtime", mLocalTime);
+
+                                    Log.d(TAG,"HttpDataHandler2 put json object: " + jsonObject);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                                Log.d(TAG, "HttpDataHandler2 pos: " + pos);
+
+                                if(isConnected())
+                                    HttpDataHandler2();
+                                else
+                                    Toast.makeText(Questionnaire.this, "Connection error", Toast.LENGTH_LONG).show();
+
+
                                 GetDataList.remove(pos);
                                 finish();
                             }
@@ -170,7 +229,7 @@ public class Questionnaire extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             Log.d(TAG, "position " + v.getId());
-
+            AddPosition.add(v.getId());
             chipGroup.removeView(v);
 
         }
@@ -220,13 +279,12 @@ public class Questionnaire extends AppCompatActivity {
 
             protected Map<String, String> getParams() {
                 Map<String, String> MyData = new HashMap<String, String>();
-                MyData.put("notiId", mNotiId); //Constants.DEVICE_ID
-                MyData.put("userId", Constants.DEVICE_ID); //mNotificaitonTitle
-                MyData.put("summary", mNotiId); //mNotificaitonPackageName
-//
-//                MyData.put("tags", mNotificaitonText);//mNotificaitonText
-//                MyData.put("timestamp", mTimeStamp);
-//                MyData.put("localtime", mLocalTime);
+                MyData.put("notiId", mNotiId);
+                MyData.put("userId", Constants.DEVICE_ID);
+                MyData.put("summary", mSummary);
+                MyData.put("tags", mTags);
+                MyData.put("timestamp", mTimeStamp);
+                MyData.put("localtime", mLocalTime);
 
 
                 labelingStudy.nctu.minuku.logger.Log.e(TAG, "HttpDataHandler (getParams): put Data Ready!");
@@ -244,5 +302,70 @@ public class Questionnaire extends AppCompatActivity {
 
     }
 
+    public void HttpDataHandler2() {
 
+        // Instantiate the cache
+        Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024); // 1MB cap
+
+        // Set up the network to use HttpURLConnection as the HTTP client.
+        Network network = new BasicNetwork(new HurlStack());
+
+        // Instantiate the RequestQueue with the cache and network.
+        mRequestQueue = new RequestQueue(cache, network);
+
+        // Start the queue
+        mRequestQueue.start();
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(
+                Request.Method.POST, url, jsonObject,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG, "HttpDataHandler2 :" + response.toString());
+
+//                        msgResponse.setText(response.toString());
+//                        hideProgressDialog();
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "HttpDataHandler2 Error0: " + error.getMessage());
+                Log.e(TAG, "HttpDataHandler2 Error1: " + error.networkResponse.statusCode);
+                Log.e(TAG, "HttpDataHandler2 Error2: " + jsonObject.toString());
+
+                NetworkResponse networkResponse = error.networkResponse;
+                if (networkResponse != null && networkResponse.data != null) {
+                    String jsonError = new String(networkResponse.data);
+                    // Print Error!
+                    labelingStudy.nctu.minuku.logger.Log.e(TAG, "HttpDataHandler2 (onErrorResponse): That didn't work " + jsonError);
+
+                }
+//                hideProgressDialog();
+            }
+        }) {
+
+            /**
+             * Passing some request headers
+             */
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json;charset=UTF-8");
+                return headers;
+            }
+        };
+        mRequestQueue.add(jsonObjReq);
+        labelingStudy.nctu.minuku.logger.Log.e(TAG, "HttpDataHandler: Insert success");
+
+    }
+
+    private boolean isConnected(){
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            return true;
+        }
+        return false;
+    }
 }

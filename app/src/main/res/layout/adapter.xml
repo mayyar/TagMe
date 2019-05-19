@@ -78,7 +78,7 @@
                     android:layout_alignParentTop="true"
                     android:layout_alignParentEnd="true"
                     android:layout_marginRight="10dp"
-                    android:background="@color/step_pager_selected_last_tab_color"
+                    android:background="@color/squarecamera__pressed_red"
                     android:elevation="0dp"
                     android:text="填寫問卷"
                     android:textSize="10sp"

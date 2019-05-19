@@ -4,6 +4,10 @@ import android.app.job.JobParameters;
 import android.app.job.JobScheduler;
 import android.app.job.JobService;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.widget.Toast;
 
 import com.android.volley.Cache;
 import com.android.volley.Network;
@@ -25,6 +29,7 @@ import labelingStudy.nctu.minuku.config.Constants;
 import labelingStudy.nctu.minuku.logger.Log;
 import labelingStudy.nctu.minuku.manager.MinukuStreamManager;
 import labelingStudy.nctu.minuku_2.MainActivity;
+import labelingStudy.nctu.minuku_2.model.Questionnaire;
 
 public class JobSchedulerService extends JobService {
 
@@ -34,18 +39,35 @@ public class JobSchedulerService extends JobService {
     RequestQueue mRequestQueue;
 
     public static ArrayList<ArrayList> GetDataList = new ArrayList<>();
+    SharedPreferences sharedPreferences;
+    int count;
 
     @Override
     public boolean onStartJob(JobParameters params) {
         Log.d(TAG, "(test Receive) OnStartJob");
-        HttpGetDataHandler();
-        MinukuStreamManager.getInstance().sendTagNotification(this);
-//        if(GetAPIDataList().size() == 2){
-//            JobScheduler jobScheduler =
-//                    (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
-//            jobScheduler.cancel(0);
-//            Log.d(TAG, "cancelling scheduled job");
-//        }
+
+        if(isConnected()){
+            HttpGetDataHandler();
+            MinukuStreamManager.getInstance().sendTagNotification(this);
+
+            sharedPreferences = getSharedPreferences(Constants.sharedPrefString, MODE_PRIVATE);
+            count = sharedPreferences.getInt("count", 0);
+            count = count + 1;
+            sharedPreferences.edit().putInt("count", count).commit();
+
+            Log.d(TAG, "(test Receive) count = " + sharedPreferences.getInt("count", 0));
+        }else
+            Toast.makeText(JobSchedulerService.this, "Connection error", Toast.LENGTH_LONG).show();
+
+
+
+        if(sharedPreferences.getInt("count", 0) == 5){
+            sharedPreferences.edit().putInt("count", 0).commit();
+            JobScheduler jobScheduler =
+                    (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
+            jobScheduler.cancel(0);
+            Log.d(TAG, "(test Receive) cancelling scheduled job, can not do it after 15 min");
+        }
         return false;
     }
 
@@ -82,16 +104,18 @@ public class JobSchedulerService extends JobService {
 
                             String noti_id = obj.getString("_id");
                             String content = obj.getString("content");
-                            String timestamp = obj.getString("localtime");
+                            String timestamp = obj.getString("timestamp");
                             String title = obj.getString("title");
                             String package_name = obj.getString("package_name");
+                            String localtime = obj.getString("localtime");
 
                             ArrayList<String> item = new ArrayList<>();
                             item.add(noti_id);
                             item.add(package_name);
-                            item.add(timestamp);
+                            item.add(localtime);
                             item.add(title);
                             item.add(content);
+                            item.add(timestamp);
 
                             GetDataList.add(item);
 
@@ -111,7 +135,7 @@ public class JobSchedulerService extends JobService {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        labelingStudy.nctu.minuku.logger.Log.e(TAG, "HttpDataHandler (onErrorResponse): That didn't work " + error);
+                        labelingStudy.nctu.minuku.logger.Log.e(TAG, "(test Receive) HttpDataHandler (onErrorResponse): That didn't work " + error);
                         labelingStudy.nctu.minuku.logger.Log.e(TAG, "HttpDataHandler (onErrorResponse): That didn't work " + error.networkResponse.statusCode);
                         NetworkResponse networkResponse = error.networkResponse;
                         if (networkResponse != null && networkResponse.data != null) {
@@ -132,6 +156,15 @@ public class JobSchedulerService extends JobService {
 
     public static ArrayList GetAPIDataList(){
         return GetDataList;
+    }
+
+    private boolean isConnected(){
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            return true;
+        }
+        return false;
     }
 
 

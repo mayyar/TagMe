@@ -38,9 +38,15 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.provider.Settings;
+
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
@@ -170,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
 //        if(current_task.equals("PART")) {
 //            initViewPager(timerview, recordview);
 //        }else{
@@ -223,23 +230,20 @@ public class MainActivity extends AppCompatActivity {
         }
 //###########################################################################
 
-        alarmMgr = (AlarmManager) MainActivity.this.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
-        alarmIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, 0);
-//        long selectedTimeMiliseconds = (long) (TimeUnit.MINUTES.toMillis(5));
-
-// Set the alarm to start at 21:32 PM
-        Calendar calendar = Calendar.getInstance();
-//        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, 10);
-        calendar.set(Calendar.MINUTE, 00);
-
-// setRepeating() lets you specify a precise custom interval--in this case,
-// 1 day
-        alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                AlarmManager.INTERVAL_DAY, alarmIntent);
+//        scheduleAlarm();
 
 
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Intent intent = new Intent();
+            String packageName = getPackageName();
+            PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+            if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+                Log.d(TAG, "HttpDataHandler isIgnoringBatteryOptimizations");
+                intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                intent.setData(Uri.parse("package:" + packageName));
+                startActivity(intent);
+            }
+        }
 
         recyclerView = (RecyclerView) findViewById(R.id.rcv);
 
@@ -270,6 +274,7 @@ public class MainActivity extends AppCompatActivity {
 //                arrayItems = gson1.fromJson(serializedObject, type);
 //                Log.d(TAG, "SerializeObject: " + arrayItems);
 //            }
+            scheduleAlarm();
 
 
             setMyAdapter();
@@ -301,6 +306,30 @@ public class MainActivity extends AppCompatActivity {
 //    public void forceCrash(View view) {
 //        throw new RuntimeException("This is a crash");
 //    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    private void scheduleAlarm(){
+        alarmMgr = (AlarmManager) MainActivity.this.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
+        alarmIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, 0);
+//        long selectedTimeMiliseconds = (long) (TimeUnit.MINUTES.toMillis(5));
+
+// Set the alarm to start at 21:32 PM
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, 16);
+        calendar.set(Calendar.MINUTE, 45);
+
+// setRepeating() lets you specify a precise custom interval--in this case,
+// 1 day
+        alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                AlarmManager.INTERVAL_DAY, alarmIntent);
+//        alarmMgr.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, AlarmManager.INTERVAL_DAY, alarmIntent);
+    }
 
 
     public void setMyAdapter(){

@@ -42,7 +42,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     private Context mContext;
     //job id 用以區別任務
     int JOB_ID = 0;
-
+    int count;
     private static final String TAG = "AlarmReceiver";
 
 
@@ -57,24 +57,28 @@ public class AlarmReceiver extends BroadcastReceiver {
         // Data you need to pass to activity
         i.putExtra("message", "1234");
 
-//        context.sendBroadcast(i);
+        context.sendBroadcast(i);
 
 //        創建一個JobScheduler對象
         JobInfo.Builder jobBuilder = new JobInfo.Builder(JOB_ID, new ComponentName(mContext.getPackageName(), JobSchedulerService.class.getName()));
-        //設置任務延遲執行的時間，單位毫秒
-//        jobBuilder.setMinimumLatency(60 * 1000);
+
+            //設置任務延遲執行的時間，單位毫秒
+//            jobBuilder.setMinimumLatency(60 * 1000);
         jobBuilder.setPeriodic(AlarmManager.INTERVAL_FIFTEEN_MINUTES);
 //        jobBuilder.setPeriodic(15 * 60 * 1000);
-        //設置是否在設備重啟後，要繼續執行
-        jobBuilder.setPersisted(true);
+        jobBuilder.setRequiresDeviceIdle(false);
+            //設置是否在設備重啟後，要繼續執行
+            jobBuilder.setPersisted(true);
 
-        JobScheduler mJobScheduler = (JobScheduler)mContext.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+            JobScheduler mJobScheduler = (JobScheduler)mContext.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
-        mJobScheduler.schedule(jobBuilder.build());
+            mJobScheduler.schedule(jobBuilder.build());
 
-        if ((mJobScheduler.schedule(jobBuilder.build())) <= 0) {
-            Log.i(TAG, " something goes wrong");
-        }
+            if ((mJobScheduler.schedule(jobBuilder.build())) <= 0) {
+                Log.i(TAG, "(test Receive) something goes wrong");
+            }
+
+
     }
 
 

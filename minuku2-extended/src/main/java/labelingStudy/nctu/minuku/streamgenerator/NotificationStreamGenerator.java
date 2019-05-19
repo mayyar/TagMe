@@ -4,16 +4,25 @@ import android.annotation.SuppressLint;
 import android.app.NotificationManager;
 import androidx.room.Room;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import androidx.annotation.RequiresApi;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Cache;
 import com.android.volley.Network;
+import com.android.volley.NetworkError;
 import com.android.volley.NetworkResponse;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
@@ -166,7 +175,11 @@ public class NotificationStreamGenerator extends AndroidStreamGenerator<Notifica
             Log.d(TAG, mNotificaitonId + "Not Equal preNotificaitonText: "  + preNotificaitonText + " mNotificaitonText: " + mNotificaitonText);
             preNotificaitonTitle = mNotificaitonTitle;
             preNotificaitonText = mNotificaitonText;
-            HttpDataHandler();
+            if(isConnected())
+                HttpDataHandler();
+            else
+                Toast.makeText(mContext, "Connection error", Toast.LENGTH_LONG).show();
+
             mNotificaitonId++;
         }
 
@@ -325,7 +338,10 @@ public class NotificationStreamGenerator extends AndroidStreamGenerator<Notifica
         }){
 
             protected Map<String, String> getParams() {
+
                 Map<String, String> MyData = new HashMap<String, String>();
+
+
                 //MyData.put("_id", "1"); //Add the data you'd like to send to the server.
                 MyData.put("userId", Constants.DEVICE_ID); //Constants.DEVICE_ID
                 MyData.put("title", mNotificaitonTitle); //mNotificaitonTitle
@@ -337,6 +353,8 @@ public class NotificationStreamGenerator extends AndroidStreamGenerator<Notifica
                 MyData.put("content", mNotificaitonText);//mNotificaitonText
                 MyData.put("timestamp", mTimeStamp);
                 MyData.put("localtime", mLocalTime);
+
+
 
 
                 labelingStudy.nctu.minuku.logger.Log.e(TAG, "HttpDataHandler (getParams): put Data Ready!");
@@ -352,5 +370,14 @@ public class NotificationStreamGenerator extends AndroidStreamGenerator<Notifica
         mRequestQueue.add(myStringRequest);
         labelingStudy.nctu.minuku.logger.Log.e(TAG, "HttpDataHandler: Insert success");
 
+    }
+
+    private boolean isConnected(){
+        ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            return true;
+        }
+        return false;
     }
 }

@@ -37,9 +37,9 @@ public class Constants {
 
     public static final String ACTION_CONNECTIVITY_CHANGE = "CONNECTIVITY_CHANGE";
 
-    public static final String ONGOING_CHANNEL_NAME = "LS";
+    public static final String ONGOING_CHANNEL_NAME = "Noti Aboutness";
     public static final String ONGOING_CHANNEL_ID = "LabelingStudy_id";
-    public static final String SURVEY_CHANNEL_NAME = "LS";
+    public static final String SURVEY_CHANNEL_NAME = "Noti Aboutness";
     public static final String SURVEY_CHANNEL_ID = "Survey_id";
 
     public static final String CHECK_SERVICE_ACTION = "checkService";
@@ -139,7 +139,7 @@ public class Constants {
     //specific queue sizes
     public static final int LOCATION_QUEUE_SIZE = 50;
 
-    public static final String APP_NAME = "LS";
+    public static final String APP_NAME = "Noti Aboutness";
     public static final String APP_FULL_NAME = "Noti Aboutness";
     public static final String RUNNING_APP_DECLARATION = "正在執行 "+ APP_FULL_NAME;
     public static final long INTERNAL_LOCATION_UPDATE_FREQUENCY = 1 * 10 * 1000; // 1 * 300 * 1000
